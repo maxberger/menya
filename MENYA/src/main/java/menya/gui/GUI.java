@@ -16,7 +16,7 @@
  * Menya. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: $ */
+/* $Id$ */
 
 package menya.gui;
 
