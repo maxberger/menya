@@ -1,12 +1,11 @@
 package menya.core.background;
 
-import menya.core.document.IDocument;
-
 /**
  * This interface represents a common background for a document.
- * @see IDocument
+ * 
+ * @see menya.core.document.IDocument
  * @author Dominik
- *
+ * @version $Revision$
  */
 public interface IBackground {
 

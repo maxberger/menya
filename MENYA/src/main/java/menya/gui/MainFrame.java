@@ -22,7 +22,20 @@ package menya.gui;
 
 import javax.swing.JFrame;
 
+/**
+ * The main frame of Menya.
+ * 
+ * @author Max
+ * @version $Revision$
+ */
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame {
 
+    /**
+     * Default constructor.
+     */
+    public MainFrame() {
+        super();
+        // TODO: Implement.
+    }
 }

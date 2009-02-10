@@ -34,8 +34,9 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Dominik
  * @author Max
+ * @version $Revision$
  */
-public class GUI {
+public final class GUI {
 
     /**
      * Set to true if we're running under Mac OS X.
@@ -47,13 +48,17 @@ public class GUI {
      */
     private static final Log LOGGER = LogFactory.getLog(GUI.class);
 
+    private GUI() {
+        // Empty on purpose.
+    }
+
     /**
      * is the main entry point of the application.
      * 
      * @param args
      *            arguments to pass
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         // TODO parse arguments
         // TODO create menya core class (respecting switches/flags passed)
         // TODO load file if wanted by argument
