@@ -1,4 +1,4 @@
-package menya.core.background;
+package menya.core.document;
 
 /**
  * This interface represents a common background for a document.
@@ -7,6 +7,6 @@ package menya.core.background;
  * @author Dominik
  * @version $Revision$
  */
-public interface IBackground {
+public interface ILayer {
 
 }
