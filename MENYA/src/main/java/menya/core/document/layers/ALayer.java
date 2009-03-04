@@ -25,7 +25,7 @@ import menya.core.document.ILayer;
 /**
  * is the abstract super class of all layers.
  * @author Dominik
- * @version $$Revision$$
+ * @version $ Revision: 19 $
  */
 public abstract class ALayer implements ILayer {
 
