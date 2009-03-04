@@ -23,7 +23,7 @@ package menya.core.document.layers;
 import menya.core.document.ILayer;
 
 /**
- * is the abstract super class of all layers.
+ * is the abstract super classa of all layers.
  * @author Dominik
  * @version $ Revision: 19 $
  */
