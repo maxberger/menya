@@ -16,7 +16,7 @@
  * Menya. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: ALayer.java 0 04.03.2009 17:09:07 Dominik $ */
+/* $Id$ */
 
 package menya.core.document.layers;
 
