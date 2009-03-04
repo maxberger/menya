@@ -1,6 +1,7 @@
 package menya.core.document;
 
-import menya.core.background.IBackground;
+import java.util.Stack;
+
 
 /**
  * This interfaces represents a MENYA annotation document.
@@ -12,8 +13,14 @@ public interface IDocument {
 
     /**
      * retrieves the background of this document.
-     * 
+     * Basically would it be the lowest layer.
      * @return the background of this document
      */
-    IBackground getBackground();
+    ILayer getBackground();
+    
+    /**
+     * retrieves all layers of this document.
+     * @return the document layers as stack
+     */
+    Stack<ILayer> getLayers();
 }
