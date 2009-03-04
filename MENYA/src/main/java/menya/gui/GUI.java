@@ -1,17 +1,17 @@
 /*
  * Copyright 2009 - 2009 by Menya Project
- * 
+
  * This file is part of Menya.
- * 
+
  * Menya is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- * 
+
  * Menya is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU Lesser Public License for more details.
- * 
+
  * You should have received a copy of the GNU Lesser Public License along with
  * Menya. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -31,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * This class represents the graphical user interface to MENYA. The main class
  * should startup here.
- * 
  * @author Dominik
  * @author Max
  * @version $Revision$
@@ -41,22 +40,30 @@ public final class GUI {
     /**
      * Set to true if we're running under Mac OS X.
      */
-    public static final boolean OSX = System.getProperty("mrj.version") != null; //$NON-NLS-1$
+    public static final boolean OSX = isOSX();
 
     /**
-     * Logger for this class
+     * retrieves if we are running on OSX.
+     * @return true if OSX, false otherwise
+     */
+    private static boolean isOSX() {
+        //$NON-NLS-1$
+        return System.getProperty("mrj.version") != null;
+    }
+    /**
+     * Logger for this class.
      */
     private static final Log LOGGER = LogFactory.getLog(GUI.class);
-
+    /**
+     * is the empty private constructor.
+     */
     private GUI() {
         // Empty on purpose.
     }
 
     /**
      * is the main entry point of the application.
-     * 
-     * @param args
-     *            arguments to pass
+     * @param args arguments to pass
      */
     public static void main(final String[] args) {
         // TODO parse arguments
@@ -64,7 +71,8 @@ public final class GUI {
         // TODO load file if wanted by argument
 
         if (GUI.OSX) {
-            System.setProperty("apple.laf.useScreenMenuBar", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+            //$NON-NLS-1$ //$NON-NLS-2$
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
         }
 
         try {

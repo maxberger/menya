@@ -15,7 +15,12 @@ import javax.swing.SwingUtilities;
 
 public class HelloCurve  extends JComponent {
 
-	private static class TestPathIterator implements PathIterator {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 8569442036086773881L;
+
+    private static class TestPathIterator implements PathIterator {
 
 		static int count=5;
 		
