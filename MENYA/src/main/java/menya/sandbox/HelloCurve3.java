@@ -15,6 +15,12 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+/**
+ * A simple test with Splines and thickness.
+ * 
+ * @author Max
+ * @version $Revision: 123 $
+ */
 public class HelloCurve3 extends JComponent {
 
     static double[][] POINTS = { { 100, 300, 5 }, { 200, 200, 5 },
@@ -35,122 +41,128 @@ public class HelloCurve3 extends JComponent {
 
         int current = 0;
 
-        public TestPathIterator(double[][] p) {
+        public TestPathIterator(final double[][] p) {
             this.points = p;
-            count = points.length;
-            slope = new double[count][];
-            slope[0] = new double[] { 0, 0 };
-            slope[count - 1] = new double[] { 0, 0 };
-            for (int i = 1; i < (count - 1); i++) {
-                slope[i] = new double[2];
-                slope[i][0] = (points[i + 1][0] - points[i - 1][0])
-                        * POINTINESS;
-                slope[i][1] = (points[i + 1][1] - points[i - 1][1])
-                        * POINTINESS;
+            this.count = this.points.length;
+            this.slope = new double[this.count][];
+            this.slope[0] = new double[] { 0, 0 };
+            this.slope[this.count - 1] = new double[] { 0, 0 };
+            for (int i = 1; i < this.count - 1; i++) {
+                this.slope[i] = new double[2];
+                this.slope[i][0] = (this.points[i + 1][0] - this.points[i - 1][0])
+                        * TestPathIterator.POINTINESS;
+                this.slope[i][1] = (this.points[i + 1][1] - this.points[i - 1][1])
+                        * TestPathIterator.POINTINESS;
             }
 
-            inverseslope = new double[count][];
-            for (int i = 0; i < count; i++) {
-                inverseslope[i] = new double[2];
-                double slopelength = Math.sqrt(slope[i][0] * slope[i][0]
-                        + slope[i][1] * slope[i][1]);
-                if (slopelength > 0.0001) {
-                    inverseslope[i][0] = (slope[i][1] / slopelength)
-                            * (points[i][2] / 2);
-                    inverseslope[i][1] = (slope[i][0] / slopelength)
-                            * (points[i][2] / 2);
-                } else {
-                    inverseslope[i][0] = 0.0;
-                    inverseslope[i][1] = 0.0;
-                }
+            this.inverseslope = new double[this.count][];
+            for (int i = 0; i < this.count; i++) {
+                this.inverseslope[i] = new double[2];
+
+                double theta = Math.atan2(this.slope[i][1], this.slope[i][0]);
+                theta += Math.PI / 2.0;
+
+                final double size = this.points[i][2] / 2;
+
+                this.inverseslope[i][0] = Math.cos(theta) * size;
+                this.inverseslope[i][1] = Math.sin(theta) * size;
             }
         }
 
-        public int currentSegment(float[] arg0) {
-            double[] d = new double[arg0.length];
-            int retVal = this.currentSegment(d);
+        public int currentSegment(final float[] arg0) {
+            final double[] d = new double[arg0.length];
+            final int retVal = this.currentSegment(d);
             for (int i = 0; i < arg0.length; i++) {
                 arg0[i] = (float) d[i];
             }
             return retVal;
         }
 
-        public int currentSegment(double[] d) {
-            int retVal = SEG_CLOSE;
+        public int currentSegment(final double[] d) {
+            int retVal = PathIterator.SEG_CLOSE;
 
-            if (current == 0) {
-                retVal = SEG_MOVETO;
-                d[0] = points[current][0];
-                d[1] = points[current][1];
-            } else if (current < count) {
-                retVal = SEG_CUBICTO;
+            if (this.current == 0) {
+                retVal = PathIterator.SEG_MOVETO;
+                d[0] = this.points[this.current][0];
+                d[1] = this.points[this.current][1];
+            } else if (this.current < this.count) {
+                retVal = PathIterator.SEG_CUBICTO;
 
-                d[0] = points[current - 1][0] + inverseslope[current - 1][0]
-                        + slope[current - 1][0];
-                d[1] = points[current - 1][1] + inverseslope[current - 1][1]
-                        + slope[current - 1][1];
+                d[0] = this.points[this.current - 1][0]
+                        + this.inverseslope[this.current - 1][0]
+                        + this.slope[this.current - 1][0];
+                d[1] = this.points[this.current - 1][1]
+                        + this.inverseslope[this.current - 1][1]
+                        + this.slope[this.current - 1][1];
 
-                d[2] = points[current][0] + inverseslope[current][0]
-                        - slope[current][0];
-                d[3] = points[current][1] + inverseslope[current][1]
-                        - slope[current][1];
-                d[4] = points[current][0] + inverseslope[current][0];
-                d[5] = points[current][1] + inverseslope[current][1];
-                for (double dd : d) {
+                d[2] = this.points[this.current][0]
+                        + this.inverseslope[this.current][0]
+                        - this.slope[this.current][0];
+                d[3] = this.points[this.current][1]
+                        + this.inverseslope[this.current][1]
+                        - this.slope[this.current][1];
+                d[4] = this.points[this.current][0]
+                        + this.inverseslope[this.current][0];
+                d[5] = this.points[this.current][1]
+                        + this.inverseslope[this.current][1];
+                for (final double dd : d) {
                     System.out.print(" " + dd);
                 }
                 System.out.println();
             } else {
-                retVal = SEG_CUBICTO;
-                int bcurr = (count * 2) - current - 2;
-                d[0] = points[bcurr + 1][0] - inverseslope[bcurr + 1][0]
-                        - slope[bcurr + 1][0];
-                d[1] = points[bcurr + 1][1] - inverseslope[bcurr + 1][1]
-                        - slope[bcurr + 1][1];
+                retVal = PathIterator.SEG_CUBICTO;
+                final int bcurr = this.count * 2 - this.current - 2;
+                d[0] = this.points[bcurr + 1][0]
+                        - this.inverseslope[bcurr + 1][0]
+                        - this.slope[bcurr + 1][0];
+                d[1] = this.points[bcurr + 1][1]
+                        - this.inverseslope[bcurr + 1][1]
+                        - this.slope[bcurr + 1][1];
 
-                d[2] = points[bcurr][0] - inverseslope[bcurr][0]
-                        + slope[bcurr][0];
-                d[3] = points[bcurr][1] - inverseslope[bcurr][1]
-                        + slope[bcurr][1];
-                d[4] = points[bcurr][0] - inverseslope[bcurr][0];
-                d[5] = points[bcurr][1] - inverseslope[bcurr][1];
-                for (double dd : d) {
+                d[2] = this.points[bcurr][0] - this.inverseslope[bcurr][0]
+                        + this.slope[bcurr][0];
+                d[3] = this.points[bcurr][1] - this.inverseslope[bcurr][1]
+                        + this.slope[bcurr][1];
+                d[4] = this.points[bcurr][0] - this.inverseslope[bcurr][0];
+                d[5] = this.points[bcurr][1] - this.inverseslope[bcurr][1];
+                for (final double dd : d) {
                     System.out.print(" " + dd);
                 }
-                System.out.println(" / " + current);
+                System.out.println(" / " + this.current);
             }
             return retVal;
         }
 
         public int getWindingRule() {
-            return WIND_NON_ZERO;
+            return PathIterator.WIND_NON_ZERO;
         }
 
         public boolean isDone() {
-            return current >= (2 * count - 1);
+            return this.current >= 2 * this.count - 1;
         }
 
         public void next() {
-            current++;
+            this.current++;
         }
 
     }
 
     private static class TestShape implements Shape {
 
-        public boolean contains(Point2D p) {
+        public boolean contains(final Point2D p) {
             return false;
         }
 
-        public boolean contains(Rectangle2D r) {
+        public boolean contains(final Rectangle2D r) {
             return false;
         }
 
-        public boolean contains(double x, double y) {
+        public boolean contains(final double x, final double y) {
             return false;
         }
 
-        public boolean contains(double x, double y, double w, double h) {
+        public boolean contains(final double x, final double y, final double w,
+                final double h) {
             return false;
         }
 
@@ -162,42 +174,50 @@ public class HelloCurve3 extends JComponent {
             return null;
         }
 
-        public PathIterator getPathIterator(AffineTransform at) {
-            return new TestPathIterator(POINTS);
+        public PathIterator getPathIterator(final AffineTransform at) {
+            return new TestPathIterator(HelloCurve3.POINTS);
         }
 
-        public PathIterator getPathIterator(AffineTransform at, double flatness) {
+        public PathIterator getPathIterator(final AffineTransform at,
+                final double flatness) {
             return this.getPathIterator(at);
         }
 
-        public boolean intersects(Rectangle2D r) {
+        public boolean intersects(final Rectangle2D r) {
             return false;
         }
 
-        public boolean intersects(double x, double y, double w, double h) {
+        public boolean intersects(final double x, final double y,
+                final double w, final double h) {
             return false;
         }
     }
 
+    /** {@inheritDoc} */
     @Override
-    protected void paintComponent(Graphics g) {
+    protected void paintComponent(final Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
+        final Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setColor(Color.RED);
-        for (int i = 0; i < POINTS.length; i++) {
-            g2d.fill(new Rectangle2D.Double(POINTS[i][0] - POINTS[i][2] / 2.0,
-                    POINTS[i][1] - POINTS[i][2] / 2.0, POINTS[i][2],
-                    POINTS[i][2]));
-        }
         g2d.setColor(Color.BLACK);
         g2d.fill(new TestShape());
         g2d.setColor(Color.BLUE);
         g2d.draw(new TestShape());
+        g2d.setColor(Color.RED);
+        for (final double[] element : HelloCurve3.POINTS) {
+            g2d.fill(new Rectangle2D.Double(element[0] - element[2] / 2.0,
+                    element[1] - element[2] / 2.0, element[2], element[2]));
+        }
     }
 
-    public static void main(String args[]) {
+    /**
+     * Test bi-cubic curves with points with different thickness.
+     * 
+     * @param args
+     *            not used.
+     */
+    public static void main(final String args[]) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 final JFrame mainFrame = new JFrame("Hello, Curve!");
