@@ -29,7 +29,9 @@
             <property name="severity" value="error"/>
             <property name="scope" value="protected"/>
         </module>
-        <module name="AbstractClassName"/>
+        <module name="AbstractClassName">
+            <property name="format" value="^A.*$|^.*Factory$"/>
+        </module>
         <module name="ConstantName"/>
         <module name="LocalFinalVariableName"/>
         <module name="LocalVariableName"/>
