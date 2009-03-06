@@ -1,0 +1,7 @@
+file: 2367382540_a2d7b51a5d_b.jpg
+source: http://www.flickr.com/photos/thomashebert/2367382540/sizes/l/
+License: CC
+
+file: 48px-Gnome-view-fullscreen.svg.png
+source: Gnome
+License: GPL
