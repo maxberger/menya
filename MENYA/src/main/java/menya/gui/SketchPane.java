@@ -8,9 +8,12 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
 import menya.core.model.Point;
@@ -28,10 +31,20 @@ public class SketchPane extends JComponent implements MouseListener,
 
     private List<Point> currentPath;
 
+    private final BufferedImage backgroundImage;
+
     /**
      * Default constructor.
      */
     public SketchPane() {
+        BufferedImage image;
+        try {
+            image = ImageIO.read(this.getClass().getResourceAsStream(
+                    "/2367382540_a2d7b51a5d_b.jpg"));
+        } catch (final IOException e) {
+            image = null;
+        }
+        this.backgroundImage = image;
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
     }
@@ -40,6 +53,10 @@ public class SketchPane extends JComponent implements MouseListener,
     @Override
     protected void paintComponent(final Graphics g) {
         final Graphics2D g2d = (Graphics2D) g;
+
+        if (this.backgroundImage != null) {
+            g2d.drawImage(this.backgroundImage, null, 0, 0);
+        }
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
         this.drawPaths(g2d);
