@@ -18,22 +18,22 @@ import menya.core.model.Point;
  */
 public class PathShape implements Shape {
 
-    private final List<Point> path;
     private static final double POINTINESS = 0.2;
+    private final List<Point> path;
 
     private static class PathShapeIterator implements PathIterator {
-
-        private static final double ALMOST_ZERO = 0.0001;
 
         private final int count;
 
         private final double[][] slope;
         private final double[][] inverseslope;
         private final List<Point> points;
+        private final AffineTransform transform;
 
         private int current;
 
-        public PathShapeIterator(final List<Point> p) {
+        public PathShapeIterator(final List<Point> p, final AffineTransform t) {
+            this.transform = t;
             this.points = p;
             this.count = this.points.size();
             this.slope = new double[this.count][];
@@ -117,6 +117,9 @@ public class PathShape implements Shape {
                 d[5] = this.points.get(bcurr).getY()
                         - this.inverseslope[bcurr][1];
             }
+            if (this.transform != null) {
+                this.transform.transform(d, 0, d, 0, 3);
+            }
             return retVal;
         }
 
@@ -182,9 +185,8 @@ public class PathShape implements Shape {
     }
 
     /** {@inheritDoc} */
-    public PathIterator getPathIterator(final AffineTransform arg0) {
-        // TODO: Apply transforms
-        return new PathShapeIterator(this.path);
+    public PathIterator getPathIterator(final AffineTransform at) {
+        return new PathShapeIterator(this.path, at);
     }
 
     /** {@inheritDoc} */
