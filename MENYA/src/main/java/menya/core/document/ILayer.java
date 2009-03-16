@@ -20,12 +20,22 @@
 
 package menya.core.document;
 
+import java.util.Set;
+
+import menya.core.model.GraphicalData;
+
 /**
- * This interface represents a common background for a document.
+ * This interface represents a common background for a document. A layer
+ * basically provides graphical data.
  * @see menya.core.document.IDocument
+ * @see menya.core.model.GraphicalData
  * @author Dominik
  * @version $Revision$
  */
 public interface ILayer {
-
+	/**
+	 * retrieves the graphical data provided by this layer.
+	 * @return A Set of graphical data.
+	 */
+	public Set<GraphicalData> getGraphicalData();
 }
