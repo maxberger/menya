@@ -21,9 +21,10 @@ package menya.core.model;
  * Repesents a single point.
  * 
  * @author Max
+ * @author Dominik
  * @version $Revision: 11 $
  */
-public class Point {
+public class Point implements GraphicalData {
 
     private final double x;
     private final double y;
