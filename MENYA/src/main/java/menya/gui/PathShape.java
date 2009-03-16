@@ -3,6 +3,7 @@ package menya.gui;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -140,8 +141,7 @@ public class PathShape implements Shape {
     /**
      * Create a new PathShape for the given Path.
      * 
-     * @param p
-     *            the Path.
+     * @param p the Path.
      */
     public PathShape(final List<Point> p) {
         this.path = p;
@@ -149,39 +149,32 @@ public class PathShape implements Shape {
 
     /** {@inheritDoc} */
     public boolean contains(final Point2D arg0) {
-        // TODO Auto-generated method stub
-        return false;
+       return contains(arg0.getX(), arg0.getY());
+    }
+
+    /** {@inheritDoc} */
+    public boolean contains(final double x, final double y) {
+        return new Area(this).contains(x, y);
     }
 
     /** {@inheritDoc} */
     public boolean contains(final Rectangle2D arg0) {
-        // TODO Auto-generated method stub
-        return false;
+        return contains(arg0.getX(), arg0.getY(), arg0.getWidth(), arg0.getHeight());
     }
-
+    
     /** {@inheritDoc} */
-    public boolean contains(final double arg0, final double arg1) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    public boolean contains(final double arg0, final double arg1,
-            final double arg2, final double arg3) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean contains(final double x, final double y, final double w, final double h) {
+        return new Area(this).contains(x, y, w, h);
     }
 
     /** {@inheritDoc} */
     public Rectangle getBounds() {
-        // TODO Auto-generated method stub
-        return null;
+    	return new Area(this).getBounds();
     }
 
     /** {@inheritDoc} */
     public Rectangle2D getBounds2D() {
-        // TODO Auto-generated method stub
-        return null;
+    	return new Area(this).getBounds2D();
     }
 
     /** {@inheritDoc} */
@@ -190,23 +183,19 @@ public class PathShape implements Shape {
     }
 
     /** {@inheritDoc} */
-    public PathIterator getPathIterator(final AffineTransform arg0,
-            final double arg1) {
+    public PathIterator getPathIterator(final AffineTransform arg0, final double arg1) {
         // TODO Auto-generated method stub
         return null;
     }
 
     /** {@inheritDoc} */
     public boolean intersects(final Rectangle2D arg0) {
-        // TODO Auto-generated method stub
-        return false;
+        return intersects(arg0.getX(), arg0.getY(), arg0.getWidth(), arg0.getHeight());
     }
 
     /** {@inheritDoc} */
-    public boolean intersects(final double arg0, final double arg1,
-            final double arg2, final double arg3) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean intersects(final double x, final double y, final double w, final double h) {
+        return new Area(this).intersects(x,y,w,h);
     }
 
 }

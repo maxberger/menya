@@ -9,8 +9,8 @@
   <inceptionYear>2009</inceptionYear>
   <licenses>
     <license>
-      <name>GNU General Public License, Version 3.0</name>
-      <url>http://www.gnu.org/licenses/gpl-3.0-standalone.html</url>
+      <name>GNU Lesser Public License, Version 3.0</name>
+      <url>http://www.gnu.org/licenses/lgpl-3.0-standalone.html</url>
       <distribution>manual</distribution>
     </license>
   </licenses>
