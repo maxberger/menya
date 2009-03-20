@@ -20,13 +20,13 @@
 
 package menya.gui;
 
+
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * This class represents the graphical user interface to MENYA. The main class
@@ -53,7 +53,7 @@ public final class GUI {
     /**
      * Logger for this class.
      */
-    private static final Log LOGGER = LogFactory.getLog(GUI.class);
+    private static final Logger LOGGER = Logger.getLogger(GUI.class);
     /**
      * is the empty private constructor.
      */
