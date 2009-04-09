@@ -4,12 +4,12 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 
-import org.pdfbox.exceptions.COSVisitorException;
-import org.pdfbox.pdmodel.PDDocument;
-import org.pdfbox.pdmodel.PDPage;
-import org.pdfbox.pdmodel.common.PDRectangle;
-import org.pdfbox.pdmodel.edit.PDPageContentStream;
-import org.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 public class HelloWorldPDF {
 
@@ -30,7 +30,7 @@ public class HelloWorldPDF {
             page.setMediaBox(new PDRectangle(10.0f * HelloWorldPDF.CM_TO_PT,
                     10.0f * HelloWorldPDF.CM_TO_PT));
             doc.addPage(page);
-            final org.pdfbox.pdmodel.font.PDFont font = PDType1Font.HELVETICA_BOLD;
+            final org.apache.pdfbox.pdmodel.font.PDFont font = PDType1Font.HELVETICA_BOLD;
             final PDPageContentStream contentStream = new PDPageContentStream(
                     doc, page);
             contentStream.beginText();
