@@ -7,19 +7,19 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.pdfbox.cos.COSArray;
-import org.pdfbox.cos.COSBase;
-import org.pdfbox.cos.COSDictionary;
-import org.pdfbox.cos.COSName;
-import org.pdfbox.cos.COSNumber;
-import org.pdfbox.cos.COSString;
-import org.pdfbox.exceptions.COSVisitorException;
-import org.pdfbox.pdmodel.PDDocument;
-import org.pdfbox.pdmodel.PDPage;
-import org.pdfbox.pdmodel.common.PDRectangle;
-import org.pdfbox.pdmodel.edit.PDPageContentStream;
-import org.pdfbox.pdmodel.font.PDType1Font;
-import org.pdfbox.util.PDFOperator;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.util.PDFOperator;
 
 public class HelloWorldPDF3 {
 
@@ -40,7 +40,7 @@ public class HelloWorldPDF3 {
             page.setMediaBox(new PDRectangle(10.0f * HelloWorldPDF3.CM_TO_PT,
                     10.0f * HelloWorldPDF3.CM_TO_PT));
             doc.addPage(page);
-            final org.pdfbox.pdmodel.font.PDFont font = PDType1Font.HELVETICA_BOLD;
+            final org.apache.pdfbox.pdmodel.font.PDFont font = PDType1Font.HELVETICA_BOLD;
             final PDPageContentStream contentStream = new PDPageContentStream(
                     doc, page);
             contentStream.beginText();

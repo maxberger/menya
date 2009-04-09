@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 
-import org.pdfbox.cos.COSDictionary;
-import org.pdfbox.exceptions.COSVisitorException;
-import org.pdfbox.pdmodel.PDDocument;
-import org.pdfbox.pdmodel.PDPage;
-import org.pdfbox.pdmodel.common.PDRectangle;
-import org.pdfbox.pdmodel.edit.PDPageContentStream;
-import org.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 public class HelloWorldPDF2 {
 
@@ -44,7 +44,7 @@ public class HelloWorldPDF2 {
                     "Private");
             privateDict.setString("Test", "123");
 
-            final org.pdfbox.pdmodel.font.PDFont font = PDType1Font.HELVETICA_BOLD;
+            final org.apache.pdfbox.pdmodel.font.PDFont font = PDType1Font.HELVETICA_BOLD;
             final PDPageContentStream contentStream = new PDPageContentStream(
                     doc, page);
             contentStream.beginText();

@@ -14,10 +14,10 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
-import org.pdfbox.pdfviewer.PageDrawer;
-import org.pdfbox.pdmodel.PDDocument;
-import org.pdfbox.pdmodel.PDPage;
-import org.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdfviewer.PageDrawer;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 public class ShowPdf extends JComponent {
 
@@ -48,7 +48,7 @@ public class ShowPdf extends JComponent {
             this.pageDimension = new Dimension(this.pageDimension.height,
                     this.pageDimension.width);
         }
-        // TODO : check roation = 0 || 180
+        // TODO : check rotation = 0 || 180
         this.setPreferredSize(this.pageDimension);
     }
 
