@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.googlecode</groupId>
   <artifactId>menya</artifactId>
@@ -41,7 +40,7 @@
         <configuration>
           <classifiers>
             <classifier>x86-Windows-g++</classifier>
-            <!--  <classifier>ppc-MacOSX-g++</classifier>  -->
+<!--  <classifier>ppc-MacOSX-g++</classifier>  -->
             <classifier>amd64-Linux-g++</classifier>
           </classifiers>
           <linker>
@@ -54,6 +53,29 @@
               <goal>nar-download</goal>
               <goal>nar-unpack</goal>
               <goal>nar-assembly</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>appassembler-maven-plugin</artifactId>
+        <version>1.0-beta-2</version>
+        <configuration>
+          <programs>
+            <program>
+              <mainClass>menya.gui.GUI</mainClass>
+              <name>menya</name>
+            </program>
+          </programs>
+          <repositoryLayout>flat</repositoryLayout>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>create-repository</goal>
+              <goal>assemble</goal>
             </goals>
           </execution>
         </executions>
