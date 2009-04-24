@@ -64,7 +64,7 @@ public class MainFrame extends javax.swing.JFrame {
         this.jToolBar1.setRollover(true);
 
         this.jButton1.setIcon(new javax.swing.ImageIcon(this.getClass()
-                .getResource("/48px-Gnome-view-fullscreen.svg.png"))); // NOI18N
+                .getResource("/view-fullscreen.png"))); // NOI18N
         this.jButton1.setText("Fullscreen");
         this.jButton1.setToolTipText("Enter / Exit Full Screen Mode");
         this.jButton1.setEnabled(this.device.isFullScreenSupported());
