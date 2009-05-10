@@ -15,7 +15,7 @@ import menya.core.model.Point;
  * Shape for a Path.
  * 
  * @author Max
- * @version $Revision: 123 $
+ * @version $Revision$
  */
 public class PathShape implements Shape {
 

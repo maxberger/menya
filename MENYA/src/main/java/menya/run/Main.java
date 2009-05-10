@@ -24,7 +24,7 @@ import org.apache.log4j.xml.DOMConfigurator;
  * A very nice new Main with log4j working.
  * 
  * @author Dominik
- * @version $Revision: 11 $
+ * @version $Revision$
  */
 public class Main {
     private static Logger logger = Logger.getLogger(Main.class);

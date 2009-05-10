@@ -16,7 +16,7 @@
  * Menya. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: ALayer.java 32 2009-03-06 10:48:52Z berger.max@gmail.com $ */
+/* $Id$ */
 
 package menya.core.model;
 
@@ -27,7 +27,7 @@ import java.awt.image.BufferedImage;
  * Represents a static image.
  * 
  * @author Max
- * @version $Revision: 123 $
+ * @version $Revision$
  */
 public class ImageData implements GraphicalData {
 

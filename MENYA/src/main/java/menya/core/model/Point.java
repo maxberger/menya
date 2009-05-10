@@ -22,7 +22,7 @@ package menya.core.model;
  * 
  * @author Max
  * @author Dominik
- * @version $Revision: 11 $
+ * @version $Revision$
  */
 public class Point {
 

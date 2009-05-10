@@ -22,7 +22,7 @@ import menya.core.model.Point;
  * The pane where one can draw on.
  * 
  * @author Max
- * @version $Revision: 11 $
+ * @version $Revision$
  */
 public class SketchPane extends JComponent implements MouseListener,
         MouseMotionListener {

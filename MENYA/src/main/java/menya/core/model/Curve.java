@@ -28,7 +28,7 @@ import menya.gui.PathShape;
  * implements the necessary functionality to be a drawn curve within a document.
  * 
  * @author Dominik
- * @version $Revision: 11 $
+ * @version $Revision$
  */
 public class Curve implements GraphicalData {
 
