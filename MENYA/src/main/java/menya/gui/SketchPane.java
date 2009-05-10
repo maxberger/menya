@@ -10,6 +10,7 @@ import javax.swing.JComponent;
 
 import jpen.PButton;
 import jpen.PButtonEvent;
+import jpen.PKind;
 import jpen.PLevelEvent;
 import jpen.Pen;
 import jpen.PenManager;
@@ -30,6 +31,23 @@ import menya.core.model.Point;
  * @version $Revision$
  */
 public class SketchPane extends JComponent {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    private static final int DEFAULT_SIZE_Y = 600;
+
+    private static final int DEFAULT_SIZE_X = 800;
+
+    private static final int MIN_SIZE_Y = 50;
+
+    private static final int MIN_SIZE_X = 50;
+
+    private static final float MAX_PEN_WIDTH = 5.0f;
+
+    private static final float DEFAULT_PRESSURE = 0.5f;
 
     private final IDocument currentDocument;
 
@@ -82,14 +100,15 @@ public class SketchPane extends JComponent {
     @Override
     public Dimension getMinimumSize() {
         // TODO: Find sensible values.
-        return new Dimension(50, 50);
+        return new Dimension(SketchPane.MIN_SIZE_X, SketchPane.MIN_SIZE_Y);
     }
 
     /** {@inheritDoc} */
     @Override
     public Dimension getPreferredSize() {
         // TODO: Find sensible values.
-        return new Dimension(800, 600);
+        return new Dimension(SketchPane.DEFAULT_SIZE_X,
+                SketchPane.DEFAULT_SIZE_Y);
     }
 
     /** {@inheritDoc} */
@@ -126,8 +145,14 @@ public class SketchPane extends JComponent {
     private Point toPoint(final Pen pen) {
         final float posx = pen.getLevelValue(Type.X);
         final float posy = pen.getLevelValue(Type.Y);
+        final float pressure;
+        if (PKind.Type.STYLUS.equals(pen.getKind().getType())) {
+            pressure = pen.getLevelValue(Type.PRESSURE);
+        } else {
+            pressure = SketchPane.DEFAULT_PRESSURE;
+        }
         // TODO: Improve!
-        return new Point(posx, posy, 3.0);
+        return new Point(posx, posy, pressure * SketchPane.MAX_PEN_WIDTH);
     }
 
     /** {@inheritDoc} */
