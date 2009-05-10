@@ -5,11 +5,16 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 
 import javax.swing.JComponent;
 
+import jpen.PButton;
+import jpen.PButtonEvent;
+import jpen.PLevelEvent;
+import jpen.Pen;
+import jpen.PenManager;
+import jpen.PLevel.Type;
+import jpen.event.PenAdapter;
 import menya.core.document.IDocument;
 import menya.core.document.ILayer;
 import menya.core.document.layers.CurveLayer;
@@ -24,8 +29,7 @@ import menya.core.model.Point;
  * @author Max
  * @version $Revision$
  */
-public class SketchPane extends JComponent implements MouseListener,
-        MouseMotionListener {
+public class SketchPane extends JComponent {
 
     private final IDocument currentDocument;
 
@@ -39,8 +43,22 @@ public class SketchPane extends JComponent implements MouseListener,
     public SketchPane() {
         this.currentDocument = new Document();
         this.activeLayer = this.currentDocument.getActiveLayer();
-        this.addMouseListener(this);
-        this.addMouseMotionListener(this);
+        // this.addMouseListener(this);
+        // this.addMouseMotionListener(this);
+
+        final PenManager penManager = new PenManager(this);
+        penManager.pen.addListener(new PenAdapter() {
+            @Override
+            public void penLevelEvent(final PLevelEvent ev) {
+                SketchPane.this.penLevelEvent(ev);
+            }
+
+            @Override
+            public void penButtonEvent(final PButtonEvent ev) {
+                SketchPane.this.penButtonEvent(ev);
+            }
+        });
+
     }
 
     /** {@inheritDoc} */
@@ -75,41 +93,24 @@ public class SketchPane extends JComponent implements MouseListener,
     }
 
     /** {@inheritDoc} */
-    public void mouseClicked(final MouseEvent arg0) {
-        // TODO Auto-generated method stub
+    public void penButtonEvent(final PButtonEvent ev) {
+        final PButton button = ev.button;
+        if (PButton.Type.LEFT.equals(button.getType())) {
+            final Point p = this.toPoint(ev.pen);
 
+            if (button.value) {
+                this.startCurve(p);
+            } else {
+                this.stopCurve(p);
+            }
+        }
     }
 
-    /** {@inheritDoc} */
-    public void mouseEntered(final MouseEvent arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    /** {@inheritDoc} */
-    public void mouseExited(final MouseEvent arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    /** {@inheritDoc} */
-    public void mousePressed(final MouseEvent arg0) {
-        final Point p = this.toPoint(arg0);
-        this.currentCurve = new Curve();
-        this.currentCurve.add(p);
-    }
-
-    private Point toPoint(final MouseEvent arg0) {
-        // TODO: Improve!
-        return new Point(arg0.getX(), arg0.getY(), 3.0);
-    }
-
-    /** {@inheritDoc} */
-    public void mouseReleased(final MouseEvent arg0) {
+    private void stopCurve(final Point p) {
         if (this.currentCurve == null) {
             return;
         }
-        this.currentCurve.add(this.toPoint(arg0));
+        this.currentCurve.add(p);
         // TODO: Smooth Path
         this.activeLayer.addCurve(this.currentCurve);
         this.currentCurve = null;
@@ -117,12 +118,24 @@ public class SketchPane extends JComponent implements MouseListener,
         this.repaint();
     }
 
+    private void startCurve(final Point p) {
+        this.currentCurve = new Curve();
+        this.currentCurve.add(p);
+    }
+
+    private Point toPoint(final Pen pen) {
+        final float posx = pen.getLevelValue(Type.X);
+        final float posy = pen.getLevelValue(Type.Y);
+        // TODO: Improve!
+        return new Point(posx, posy, 3.0);
+    }
+
     /** {@inheritDoc} */
-    public void mouseDragged(final MouseEvent arg0) {
+    public void penLevelEvent(final PLevelEvent ev) {
         if (this.currentCurve == null) {
             return;
         }
-        final Point newP = this.toPoint(arg0);
+        final Point newP = this.toPoint(ev.pen);
         // final Point old = this.currentPath.get(this.currentPath.size() - 1);
         // if (newP.distanceTo(old) > 10.0) {
         this.currentCurve.add(newP);
