@@ -16,7 +16,7 @@
  * Menya. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: ALayer.java 32 2009-03-06 10:48:52Z berger.max@gmail.com $ */
+/* $Id$ */
 
 package menya.core.document.layers;
 
@@ -34,7 +34,7 @@ import menya.core.model.ImageData;
  * Represents an image layer.
  * 
  * @author Max
- * @version $Revision: 123 $
+ * @version $Revision$
  */
 public class ImageLayer extends ALayer {
 

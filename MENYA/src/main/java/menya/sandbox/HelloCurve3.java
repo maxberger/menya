@@ -19,7 +19,7 @@ import javax.swing.SwingUtilities;
  * A simple test with Splines and thickness.
  * 
  * @author Max
- * @version $Revision: 123 $
+ * @version $Revision$
  */
 public class HelloCurve3 extends JComponent {
 

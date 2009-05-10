@@ -24,7 +24,7 @@ import java.awt.Graphics2D;
  * (YET) not specified way.
  * 
  * @author Dominik
- * @version $Revision: 11 $
+ * @version $Revision$
  */
 public interface GraphicalData {
 

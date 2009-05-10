@@ -12,7 +12,7 @@ import menya.core.document.layers.ImageLayer;
  * Default Implementation of a Document.
  * 
  * @author Max
- * @version $Revision: 11 $
+ * @version $Revision$
  */
 public class Document implements IDocument {
 
