@@ -1,6 +1,5 @@
 package menya.gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -8,14 +7,15 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
+import menya.core.document.IDocument;
+import menya.core.document.ILayer;
+import menya.core.document.layers.CurveLayer;
+import menya.core.model.Curve;
+import menya.core.model.Document;
+import menya.core.model.GraphicalData;
 import menya.core.model.Point;
 
 /**
@@ -27,24 +27,18 @@ import menya.core.model.Point;
 public class SketchPane extends JComponent implements MouseListener,
         MouseMotionListener {
 
-    private final List<List<Point>> paths = new ArrayList<List<Point>>();
+    private final IDocument currentDocument;
 
-    private List<Point> currentPath;
+    private final CurveLayer activeLayer;
 
-    private final BufferedImage backgroundImage;
+    private Curve currentCurve;
 
     /**
      * Default constructor.
      */
     public SketchPane() {
-        BufferedImage image;
-        try {
-            image = ImageIO.read(this.getClass().getResourceAsStream(
-                    "/2367382540_a2d7b51a5d_b.jpg"));
-        } catch (final IOException e) {
-            image = null;
-        }
-        this.backgroundImage = image;
+        this.currentDocument = new Document();
+        this.activeLayer = this.currentDocument.getActiveLayer();
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
     }
@@ -53,24 +47,16 @@ public class SketchPane extends JComponent implements MouseListener,
     @Override
     protected void paintComponent(final Graphics g) {
         final Graphics2D g2d = (Graphics2D) g;
-
-        if (this.backgroundImage != null) {
-            g2d.drawImage(this.backgroundImage, null, 0, 0);
-        }
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-        this.drawPaths(g2d);
-    }
 
-    private void drawPaths(final Graphics2D g2d) {
-        // TODO: Path may have different colors
-        g2d.setColor(Color.BLACK);
-        for (final List<Point> path : this.paths) {
-            // TODO: Cache pathShape
-            g2d.fill(new PathShape(path));
+        for (final ILayer l : this.currentDocument.getLayers()) {
+            for (final GraphicalData gd : l.getGraphicalData()) {
+                gd.draw(g2d);
+            }
         }
-        if (this.currentPath != null) {
-            g2d.fill(new PathShape(this.currentPath));
+        if (this.currentCurve != null) {
+            this.currentCurve.draw(g2d);
         }
     }
 
@@ -109,8 +95,8 @@ public class SketchPane extends JComponent implements MouseListener,
     /** {@inheritDoc} */
     public void mousePressed(final MouseEvent arg0) {
         final Point p = this.toPoint(arg0);
-        this.currentPath = new ArrayList<Point>();
-        this.currentPath.add(p);
+        this.currentCurve = new Curve();
+        this.currentCurve.add(p);
     }
 
     private Point toPoint(final MouseEvent arg0) {
@@ -120,26 +106,26 @@ public class SketchPane extends JComponent implements MouseListener,
 
     /** {@inheritDoc} */
     public void mouseReleased(final MouseEvent arg0) {
-        if (this.currentPath == null) {
+        if (this.currentCurve == null) {
             return;
         }
-        this.currentPath.add(this.toPoint(arg0));
+        this.currentCurve.add(this.toPoint(arg0));
         // TODO: Smooth Path
-        this.paths.add(this.currentPath);
-        this.currentPath = null;
+        this.activeLayer.addCurve(this.currentCurve);
+        this.currentCurve = null;
         // TODO: Maybe erase path that was drawn during drag.
         this.repaint();
     }
 
     /** {@inheritDoc} */
     public void mouseDragged(final MouseEvent arg0) {
-        if (this.currentPath == null) {
+        if (this.currentCurve == null) {
             return;
         }
         final Point newP = this.toPoint(arg0);
         // final Point old = this.currentPath.get(this.currentPath.size() - 1);
         // if (newP.distanceTo(old) > 10.0) {
-        this.currentPath.add(newP);
+        this.currentCurve.add(newP);
         // }
         this.repaint();
     }

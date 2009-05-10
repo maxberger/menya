@@ -15,24 +15,37 @@
  * You should have received a copy of the GNU Lesser Public License along with
  * Menya. If not, see <http://www.gnu.org/licenses/>.
  */
+
+/* $Id: ALayer.java 32 2009-03-06 10:48:52Z berger.max@gmail.com $ */
+
 package menya.core.model;
 
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 
 /**
- * represents all possible graphical data that one may could draw / render in
- * (YET) not specified way.
+ * Represents a static image.
  * 
- * @author Dominik
- * @version $Revision: 11 $
+ * @author Max
+ * @version $Revision: 123 $
  */
-public interface GraphicalData {
+public class ImageData implements GraphicalData {
+
+    private final BufferedImage image;
 
     /**
-     * Draw the represented object.
+     * Create a new ImageData from a given Image.
      * 
-     * @param g2d
-     *            Graphics context.
+     * @param img
+     *            the image to use.
      */
-    void draw(Graphics2D g2d);
+    public ImageData(final BufferedImage img) {
+        this.image = img;
+    }
+
+    /** {@inheritDoc} */
+    public void draw(final Graphics2D g2d) {
+        g2d.drawImage(this.image, null, 0, 0);
+    }
+
 }
