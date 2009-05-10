@@ -15,45 +15,50 @@
  * You should have received a copy of the GNU Lesser Public License along with
  * Menya. If not, see <http://www.gnu.org/licenses/>.
  */
-package menya.core.model;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
+/* $Id: ALayer.java 32 2009-03-06 10:48:52Z berger.max@gmail.com $ */
+
+package menya.core.document.layers;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import menya.gui.PathShape;
+import menya.core.model.Curve;
+import menya.core.model.GraphicalData;
 
 /**
- * implements the necessary functionality to be a drawn curve within a document.
+ * Represents a layer with curves drawn.
  * 
- * @author Dominik
- * @version $Revision: 11 $
+ * @author Max
+ * @version $Revision: 123 $
  */
-public class Curve implements GraphicalData {
+public class CurveLayer extends ALayer {
 
-    private final List<Point> path = new ArrayList<Point>();
+    private final List<Curve> curves = new ArrayList<Curve>();
 
     /**
      * Default constructor.
      */
-    public Curve() {
-
+    public CurveLayer() {
+        // empty on purpose.
     }
 
     /** {@inheritDoc} */
-    public void draw(final Graphics2D g2d) {
-        g2d.setColor(Color.BLACK);
-        g2d.fill(new PathShape(this.path));
+    @SuppressWarnings("unchecked")
+    public Iterable<GraphicalData> getGraphicalData() {
+        final Iterable<Curve> i = this.curves;
+        final Iterable d = i;
+        return d;
     }
 
     /**
-     * Adds a new Point to a curve.
+     * Adds a new curve to the layer.
      * 
-     * @param p
-     *            The point to add.
+     * @param curve
+     *            the curve to add.
      */
-    public void add(final Point p) {
-        this.path.add(p);
+    public void addCurve(final Curve curve) {
+        this.curves.add(curve);
     }
+
 }
