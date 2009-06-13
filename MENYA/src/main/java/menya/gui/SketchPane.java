@@ -60,7 +60,8 @@ public class SketchPane extends JComponent {
      */
     public SketchPane() {
         this.currentDocument = new Document();
-        this.activeLayer = this.currentDocument.getActiveLayer();
+        this.activeLayer = this.currentDocument.getPages().get(0)
+                .getActiveLayer();
         // this.addMouseListener(this);
         // this.addMouseMotionListener(this);
 
@@ -86,7 +87,8 @@ public class SketchPane extends JComponent {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
-        for (final ILayer l : this.currentDocument.getLayers()) {
+        for (final ILayer l : this.currentDocument.getPages().get(0)
+                .getLayers()) {
             for (final GraphicalData gd : l.getGraphicalData()) {
                 gd.draw(g2d);
             }
