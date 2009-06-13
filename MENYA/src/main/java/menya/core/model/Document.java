@@ -1,12 +1,11 @@
 package menya.core.model;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import menya.core.document.IDocument;
-import menya.core.document.ILayer;
-import menya.core.document.layers.CurveLayer;
-import menya.core.document.layers.ImageLayer;
+import menya.core.document.IPage;
 
 /**
  * Default Implementation of a Document.
@@ -16,36 +15,19 @@ import menya.core.document.layers.ImageLayer;
  */
 public class Document implements IDocument {
 
-    private final ArrayDeque<ILayer> layers;
+    private final List<IPage> pages;
 
     /**
      * Default Constructor.
      */
     public Document() {
-        this.layers = new ArrayDeque<ILayer>();
-
-        this.layers.add(new ImageLayer());
+        this.pages = new ArrayList<IPage>();
+        this.pages.add(new Page());
     }
 
     /** {@inheritDoc} */
-    public ILayer getBackground() {
-        return this.layers.peekFirst();
+    public List<IPage> getPages() {
+        return Collections.unmodifiableList(this.pages);
     }
 
-    /** {@inheritDoc} */
-    public Deque<ILayer> getLayers() {
-        return this.layers.clone();
-    }
-
-    /** {@inheritDoc} */
-    public CurveLayer getActiveLayer() {
-        final ILayer top = this.layers.peekLast();
-        if (top instanceof CurveLayer) {
-            return (CurveLayer) top;
-        } else {
-            final CurveLayer c = new CurveLayer();
-            this.layers.add(c);
-            return c;
-        }
-    }
 }

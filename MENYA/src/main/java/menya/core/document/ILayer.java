@@ -37,5 +37,5 @@ public interface ILayer {
      * 
      * @return A Set of graphical data.
      */
-    public Iterable<GraphicalData> getGraphicalData();
+    Iterable<GraphicalData> getGraphicalData();
 }

@@ -20,9 +20,7 @@
 
 package menya.core.document;
 
-import java.util.Deque;
-
-import menya.core.document.layers.CurveLayer;
+import java.util.List;
 
 /**
  * This interfaces represents a MENYA annotation document.
@@ -31,27 +29,9 @@ import menya.core.document.layers.CurveLayer;
  * @version $Revision$
  */
 public interface IDocument {
-    /**
-     * retrieves the background of this document. Basically would it be the
-     * lowest (=first) layer. Thus it is the same as if we would call
-     * getLayers().peekFirst().
-     * 
-     * @return the background of this document or null if no layers are present.
-     */
-    ILayer getBackground();
 
     /**
-     * retrieves all layers of this document.
-     * 
-     * @return the document layers as stack
+     * @return An unmodifiable view as list of pages in this document.
      */
-    Deque<ILayer> getLayers();
-
-    /**
-     * Retrieves an active curve layer. This method never returns null - if no
-     * curve layer is present, a new one must be created.
-     * 
-     * @return the active curve layer.
-     */
-    CurveLayer getActiveLayer();
+    List<IPage> getPages();
 }
