@@ -48,7 +48,7 @@ public class ImageLayer extends ALayer {
         ImageData img;
         try {
             bimage = ImageIO.read(this.getClass().getResourceAsStream(
-                    "/2367382540_a2d7b51a5d_b.jpg"));
+                    "/paper.jpg"));
             img = new ImageData(bimage);
         } catch (final IOException e) {
             img = null;

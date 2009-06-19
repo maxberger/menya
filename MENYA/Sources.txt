@@ -2,6 +2,9 @@ file: 2367382540_a2d7b51a5d_b.jpg
 source: http://www.flickr.com/photos/thomashebert/2367382540/sizes/l/
 License: CC
 
+file: paper.jpg
+derived from above 2367382540_a2d7b51a5d_b.jpg
+
 file: view-fullscreen.png
 source: Tango Icon Theme
 License: Public Domain
