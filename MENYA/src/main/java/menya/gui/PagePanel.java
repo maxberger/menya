@@ -1,14 +1,13 @@
 package menya.gui;
 
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
 
 import menya.core.document.IDocument;
+import menya.core.document.IPage;
 import menya.core.model.Document;
 
 /**
@@ -26,25 +25,30 @@ public class PagePanel extends JPanel {
 
     private final IDocument currentDocument;
 
-    private final List<SketchPane> pagePanes;
+    private final List<SketchPane> pagePanes = new ArrayList<SketchPane>();
 
     /**
      * Default constructor.
      */
     public PagePanel() {
         super();
-        this.setLayout(new GridBagLayout());
         this.currentDocument = new Document();
-        final GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        this.pagePanes = new ArrayList<SketchPane>(this.currentDocument
-                .getPages().size());
+        this.reload();
+    }
 
-        final SketchPane p = new SketchPane(this.currentDocument.getPages()
-                .get(0));
-        this.pagePanes.add(p);
-        this.add(p, gbc);
+    private void reload() {
+        this.pagePanes.clear();
+        this.removeAll();
+        int y = 0;
+        for (final IPage page : this.currentDocument.getPages()) {
+            final SketchPane p = new SketchPane(page);
+            this.pagePanes.add(p);
+            this.add(p);
+            p.setLocation(0, y);
+            y += p.getHeight();
+        }
         this.validate();
+
     }
 
     /** {@inheritDoc} */

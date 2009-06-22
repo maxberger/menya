@@ -23,6 +23,7 @@ public class Document implements IDocument {
     public Document() {
         this.pages = new ArrayList<IPage>();
         this.pages.add(new Page());
+        this.pages.add(new Page());
     }
 
     /** {@inheritDoc} */
