@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Dimension2D;
 
 import javax.swing.JComponent;
 
@@ -16,11 +17,10 @@ import jpen.Pen;
 import jpen.PenManager;
 import jpen.PLevel.Type;
 import jpen.event.PenAdapter;
-import menya.core.document.IDocument;
 import menya.core.document.ILayer;
+import menya.core.document.IPage;
 import menya.core.document.layers.CurveLayer;
 import menya.core.model.Curve;
-import menya.core.model.Document;
 import menya.core.model.GraphicalData;
 import menya.core.model.Point;
 
@@ -37,19 +37,11 @@ public class SketchPane extends JComponent {
      */
     private static final long serialVersionUID = 1L;
 
-    private static final int DEFAULT_SIZE_Y = 600;
-
-    private static final int DEFAULT_SIZE_X = 800;
-
-    private static final int MIN_SIZE_Y = 50;
-
-    private static final int MIN_SIZE_X = 50;
-
     private static final float MAX_PEN_WIDTH = 5.0f;
 
     private static final float DEFAULT_PRESSURE = 0.5f;
 
-    private final IDocument currentDocument;
+    private final IPage currentPage;
 
     private final CurveLayer activeLayer;
 
@@ -57,11 +49,13 @@ public class SketchPane extends JComponent {
 
     /**
      * Default constructor.
+     * 
+     * @param page
+     *            the Page to display in this pane.
      */
-    public SketchPane() {
-        this.currentDocument = new Document();
-        this.activeLayer = this.currentDocument.getPages().get(0)
-                .getActiveLayer();
+    public SketchPane(final IPage page) {
+        this.currentPage = page;
+        this.activeLayer = page.getActiveLayer();
         // this.addMouseListener(this);
         // this.addMouseMotionListener(this);
 
@@ -77,18 +71,18 @@ public class SketchPane extends JComponent {
                 SketchPane.this.penButtonEvent(ev);
             }
         });
-
+        this.setSize(this.getPreferredSize());
     }
 
     /** {@inheritDoc} */
     @Override
     protected void paintComponent(final Graphics g) {
+        super.paintComponent(g);
         final Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
-        for (final ILayer l : this.currentDocument.getPages().get(0)
-                .getLayers()) {
+        for (final ILayer l : this.currentPage.getLayers()) {
             for (final GraphicalData gd : l.getGraphicalData()) {
                 gd.draw(g2d);
             }
@@ -98,19 +92,27 @@ public class SketchPane extends JComponent {
         }
     }
 
+    private Dimension dim2DtoDim(final Dimension2D d2d) {
+        return new Dimension((int) Math.ceil(d2d.getWidth()), (int) Math
+                .ceil(d2d.getHeight()));
+    }
+
     /** {@inheritDoc} */
     @Override
     public Dimension getMinimumSize() {
-        // TODO: Find sensible values.
-        return new Dimension(SketchPane.MIN_SIZE_X, SketchPane.MIN_SIZE_Y);
+        return this.getPreferredSize();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Dimension getMaximumSize() {
+        return this.getPreferredSize();
     }
 
     /** {@inheritDoc} */
     @Override
     public Dimension getPreferredSize() {
-        // TODO: Find sensible values.
-        return new Dimension(SketchPane.DEFAULT_SIZE_X,
-                SketchPane.DEFAULT_SIZE_Y);
+        return this.dim2DtoDim(this.currentPage.getPageSize());
     }
 
     /** {@inheritDoc} */
@@ -172,8 +174,7 @@ public class SketchPane extends JComponent {
 
     /** {@inheritDoc} */
     public void mouseMoved(final MouseEvent arg0) {
-        // TODO Auto-generated method stub
-
+        // ignore this event.
     }
 
 }

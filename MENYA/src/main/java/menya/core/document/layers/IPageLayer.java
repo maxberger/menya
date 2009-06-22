@@ -16,7 +16,7 @@
  * Menya. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: ImageLayer.java 50 2009-05-10 08:36:17Z berger.max $ */
+/* $Id$ */
 
 package menya.core.document.layers;
 

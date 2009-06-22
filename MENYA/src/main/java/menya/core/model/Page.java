@@ -15,7 +15,7 @@ import menya.core.document.layers.ImageLayer;
  * Default Implementation of a Document.
  * 
  * @author Max
- * @version $Revision: 50 $
+ * @version $Revision$
  */
 public class Page implements IPage {
 

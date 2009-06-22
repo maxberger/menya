@@ -67,7 +67,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Container class="menya.gui.SketchPane" name="sketchPane1">
+        <Container class="menya.gui.PagePanel" name="sketchPane1">
 
           <Layout>
             <DimensionLayout dim="0">
