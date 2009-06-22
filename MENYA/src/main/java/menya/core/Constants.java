@@ -16,7 +16,7 @@
  * Menya. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: IDocument.java 49 2009-05-10 08:18:54Z berger.max@gmail.com $ */
+/* $Id$ */
 
 package menya.core;
 
@@ -24,7 +24,7 @@ package menya.core;
  * This class defines constants to be used throughout MENYA.
  * 
  * @author Max
- * @version $Revision: 123 $
+ * @version $Revision$
  */
 public final class Constants {
 

@@ -16,7 +16,7 @@
  * Menya. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* $Id: IDocument.java 49 2009-05-10 08:18:54Z berger.max@gmail.com $ */
+/* $Id$ */
 
 package menya.core.document;
 
@@ -30,7 +30,7 @@ import menya.core.document.layers.CurveLayer;
  * 
  * @author Dominik
  * @author Max
- * @version $Revision: 49 $
+ * @version $Revision$
  */
 public interface IPage {
 

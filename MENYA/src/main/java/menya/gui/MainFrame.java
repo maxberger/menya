@@ -54,7 +54,7 @@ public class MainFrame extends javax.swing.JFrame {
         this.jToolBar1 = new javax.swing.JToolBar();
         this.jButton1 = new javax.swing.JButton();
         this.jScrollPane1 = new javax.swing.JScrollPane();
-        this.sketchPane1 = new menya.gui.SketchPane();
+        this.sketchPane1 = new menya.gui.PagePanel();
 
         this
                 .setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -119,7 +119,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar jToolBar1;
-    private menya.gui.SketchPane sketchPane1;
+    private menya.gui.PagePanel sketchPane1;
     // End of variables declaration//GEN-END:variables
 
 }
