@@ -43,6 +43,7 @@
 						<classifier>x86-Windows-g++</classifier>
 						<!--  <classifier>ppc-MacOSX-g++</classifier>  -->
 						<classifier>amd64-Linux-g++</classifier>
+						<classifier>i386-Linux-g++</classifier>
 					</classifiers>
 					<linker>
 						<name>g++</name>
