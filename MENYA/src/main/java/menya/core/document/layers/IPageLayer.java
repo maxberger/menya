@@ -26,10 +26,11 @@ import menya.core.model.GraphicalData;
  * A single layer on a single page.
  * 
  * @author Max
+ * @version $Revision$
  */
 public interface IPageLayer {
     /**
      * @return The graphics for this layer.
      */
-    public Iterable<GraphicalData> getGraphicalData();
+    Iterable<GraphicalData> getGraphicalData();
 }
