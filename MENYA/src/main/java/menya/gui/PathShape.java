@@ -20,6 +20,17 @@ import menya.core.model.Point;
 public class PathShape implements Shape {
 
     private static final double POINTINESS = 0.2;
+
+    private static final int SOLE_X = 0;
+    private static final int SOLE_Y = 1;
+
+    private static final int START_X = 0;
+    private static final int START_Y = 1;
+    private static final int MID_X = 2;
+    private static final int MID_Y = 3;
+    private static final int END_X = 4;
+    private static final int END_Y = 5;
+
     private final List<Point> path;
 
     private static class PathShapeIterator implements PathIterator {
@@ -30,10 +41,13 @@ public class PathShape implements Shape {
         private final double[][] inverseslope;
         private final List<Point> points;
         private final AffineTransform transform;
+        private final boolean flattened;
 
         private int current;
 
-        public PathShapeIterator(final List<Point> p, final AffineTransform t) {
+        protected PathShapeIterator(final List<Point> p,
+                final AffineTransform t, final boolean flat) {
+            this.flattened = flat;
             this.transform = t;
             this.points = p;
             this.count = this.points.size();
@@ -76,51 +90,96 @@ public class PathShape implements Shape {
             int retVal = PathIterator.SEG_CLOSE;
 
             if (this.current == 0) {
-                retVal = PathIterator.SEG_MOVETO;
-                d[0] = this.points.get(this.current).getX();
-                d[1] = this.points.get(this.current).getY();
+                retVal = this.fillInStart(d);
             } else if (this.current < this.count) {
-                retVal = PathIterator.SEG_CUBICTO;
+                retVal = this.fillInFirstHalf(d);
+            } else {
+                retVal = this.fillInSecondHalf(d);
+            }
+            if (this.transform != null) {
+                this.transform.transform(d, 0, d, 0, d.length / 2);
+            }
+            return retVal;
+        }
 
-                d[0] = this.points.get(this.current - 1).getX()
-                        + this.inverseslope[this.current - 1][0]
-                        + this.slope[this.current - 1][0];
-                d[1] = this.points.get(this.current - 1).getY()
-                        + this.inverseslope[this.current - 1][1]
-                        + this.slope[this.current - 1][1];
-
-                d[2] = this.points.get(this.current).getX()
-                        + this.inverseslope[this.current][0]
-                        - this.slope[this.current][0];
-                d[3] = this.points.get(this.current).getY()
-                        + this.inverseslope[this.current][1]
-                        - this.slope[this.current][1];
-                d[4] = this.points.get(this.current).getX()
-                        + this.inverseslope[this.current][0];
-                d[5] = this.points.get(this.current).getY()
-                        + this.inverseslope[this.current][1];
+        /**
+         * @param d
+         * @return
+         */
+        private int fillInSecondHalf(final double[] d) {
+            int retVal;
+            final int bcurr = this.count * 2 - this.current - 2;
+            final double midX = this.points.get(bcurr).getX()
+                    - this.inverseslope[bcurr][0] + this.slope[bcurr][0];
+            final double midY = this.points.get(bcurr).getY()
+                    - this.inverseslope[bcurr][1] + this.slope[bcurr][1];
+            if (this.flattened) {
+                retVal = PathIterator.SEG_LINETO;
+                d[PathShape.SOLE_X] = midX;
+                d[PathShape.SOLE_Y] = midY;
             } else {
                 retVal = PathIterator.SEG_CUBICTO;
-                final int bcurr = this.count * 2 - this.current - 2;
-                d[0] = this.points.get(bcurr + 1).getX()
+                d[PathShape.START_X] = this.points.get(bcurr + 1).getX()
                         - this.inverseslope[bcurr + 1][0]
                         - this.slope[bcurr + 1][0];
-                d[1] = this.points.get(bcurr + 1).getY()
+                d[PathShape.START_Y] = this.points.get(bcurr + 1).getY()
                         - this.inverseslope[bcurr + 1][1]
                         - this.slope[bcurr + 1][1];
 
-                d[2] = this.points.get(bcurr).getX()
-                        - this.inverseslope[bcurr][0] + this.slope[bcurr][0];
-                d[3] = this.points.get(bcurr).getY()
-                        - this.inverseslope[bcurr][1] + this.slope[bcurr][1];
-                d[4] = this.points.get(bcurr).getX()
+                d[PathShape.MID_X] = midX;
+                d[PathShape.MID_Y] = midY;
+                d[PathShape.END_X] = this.points.get(bcurr).getX()
                         - this.inverseslope[bcurr][0];
-                d[5] = this.points.get(bcurr).getY()
+                d[PathShape.END_Y] = this.points.get(bcurr).getY()
                         - this.inverseslope[bcurr][1];
             }
-            if (this.transform != null) {
-                this.transform.transform(d, 0, d, 0, 3);
+            return retVal;
+        }
+
+        /**
+         * @param d
+         * @return
+         */
+        private int fillInFirstHalf(final double[] d) {
+            int retVal;
+            final double midX = this.points.get(this.current).getX()
+                    + this.inverseslope[this.current][0]
+                    - this.slope[this.current][0];
+            final double midY = this.points.get(this.current).getY()
+                    + this.inverseslope[this.current][1]
+                    - this.slope[this.current][1];
+            if (this.flattened) {
+                retVal = PathIterator.SEG_LINETO;
+                d[PathShape.SOLE_X] = midX;
+                d[PathShape.SOLE_Y] = midY;
+            } else {
+                retVal = PathIterator.SEG_CUBICTO;
+
+                d[PathShape.START_X] = this.points.get(this.current - 1).getX()
+                        + this.inverseslope[this.current - 1][0]
+                        + this.slope[this.current - 1][0];
+                d[PathShape.START_Y] = this.points.get(this.current - 1).getY()
+                        + this.inverseslope[this.current - 1][1]
+                        + this.slope[this.current - 1][1];
+                d[PathShape.MID_X] = midX;
+                d[PathShape.MID_Y] = midY;
+                d[PathShape.END_X] = this.points.get(this.current).getX()
+                        + this.inverseslope[this.current][0];
+                d[PathShape.END_Y] = this.points.get(this.current).getY()
+                        + this.inverseslope[this.current][1];
             }
+            return retVal;
+        }
+
+        /**
+         * @param d
+         * @return
+         */
+        private int fillInStart(final double[] d) {
+            int retVal;
+            retVal = PathIterator.SEG_MOVETO;
+            d[PathShape.SOLE_X] = this.points.get(this.current).getX();
+            d[PathShape.SOLE_Y] = this.points.get(this.current).getY();
             return retVal;
         }
 
@@ -141,7 +200,8 @@ public class PathShape implements Shape {
     /**
      * Create a new PathShape for the given Path.
      * 
-     * @param p the Path.
+     * @param p
+     *            the Path.
      */
     public PathShape(final List<Point> p) {
         this.path = p;
@@ -149,7 +209,7 @@ public class PathShape implements Shape {
 
     /** {@inheritDoc} */
     public boolean contains(final Point2D arg0) {
-       return contains(arg0.getX(), arg0.getY());
+        return this.contains(arg0.getX(), arg0.getY());
     }
 
     /** {@inheritDoc} */
@@ -159,43 +219,48 @@ public class PathShape implements Shape {
 
     /** {@inheritDoc} */
     public boolean contains(final Rectangle2D arg0) {
-        return contains(arg0.getX(), arg0.getY(), arg0.getWidth(), arg0.getHeight());
+        return this.contains(arg0.getX(), arg0.getY(), arg0.getWidth(), arg0
+                .getHeight());
     }
-    
+
     /** {@inheritDoc} */
-    public boolean contains(final double x, final double y, final double w, final double h) {
+    public boolean contains(final double x, final double y, final double w,
+            final double h) {
         return new Area(this).contains(x, y, w, h);
     }
 
     /** {@inheritDoc} */
     public Rectangle getBounds() {
-    	return new Area(this).getBounds();
+        return new Area(this).getBounds();
     }
 
     /** {@inheritDoc} */
     public Rectangle2D getBounds2D() {
-    	return new Area(this).getBounds2D();
+        return new Area(this).getBounds2D();
     }
 
     /** {@inheritDoc} */
     public PathIterator getPathIterator(final AffineTransform at) {
-        return new PathShapeIterator(this.path, at);
+        return new PathShapeIterator(this.path, at, false);
     }
 
     /** {@inheritDoc} */
-    public PathIterator getPathIterator(final AffineTransform arg0, final double arg1) {
-        // TODO Auto-generated method stub
-        return null;
+    public PathIterator getPathIterator(final AffineTransform at,
+            final double distance) {
+        // TODO: distance is not properly supported.
+        return new PathShapeIterator(this.path, at, true);
     }
 
     /** {@inheritDoc} */
     public boolean intersects(final Rectangle2D arg0) {
-        return intersects(arg0.getX(), arg0.getY(), arg0.getWidth(), arg0.getHeight());
+        return this.intersects(arg0.getX(), arg0.getY(), arg0.getWidth(), arg0
+                .getHeight());
     }
 
     /** {@inheritDoc} */
-    public boolean intersects(final double x, final double y, final double w, final double h) {
-        return new Area(this).intersects(x,y,w,h);
+    public boolean intersects(final double x, final double y, final double w,
+            final double h) {
+        return new Area(this).intersects(x, y, w, h);
     }
 
 }
