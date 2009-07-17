@@ -38,4 +38,14 @@ public interface ILayer {
      * @return A Set of graphical data.
      */
     Iterable<GraphicalData> getGraphicalData();
+
+    /**
+     * Simple check if this layer has changed since {{@link #getGraphicalData()}
+     * was last called.
+     * <p>
+     * If getGraphicalData was never called the result is undefined.
+     * 
+     * @return false only if the data has not changed.
+     */
+    boolean hasChanged();
 }
