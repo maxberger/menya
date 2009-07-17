@@ -20,7 +20,6 @@
 
 package menya.gui;
 
-
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -31,6 +30,7 @@ import org.apache.log4j.Logger;
 /**
  * This class represents the graphical user interface to MENYA. The main class
  * should startup here.
+ * 
  * @author Dominik
  * @author Max
  * @version $Revision$
@@ -40,20 +40,13 @@ public final class GUI {
     /**
      * Set to true if we're running under Mac OS X.
      */
-    public static final boolean OSX = isOSX();
+    public static final boolean OSX = GUI.isOSX();
 
-    /**
-     * retrieves if we are running on OSX.
-     * @return true if OSX, false otherwise
-     */
-    private static boolean isOSX() {
-        //$NON-NLS-1$
-        return System.getProperty("mrj.version") != null;
-    }
     /**
      * Logger for this class.
      */
     private static final Logger LOGGER = Logger.getLogger(GUI.class);
+
     /**
      * is the empty private constructor.
      */
@@ -62,8 +55,20 @@ public final class GUI {
     }
 
     /**
+     * retrieves if we are running on OSX.
+     * 
+     * @return true if OSX, false otherwise
+     */
+    private static boolean isOSX() {
+        //$NON-NLS-1$
+        return System.getProperty("mrj.version") != null;
+    }
+
+    /**
      * is the main entry point of the application.
-     * @param args arguments to pass
+     * 
+     * @param args
+     *            arguments to pass
      */
     public static void main(final String[] args) {
         // TODO parse arguments
