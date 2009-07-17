@@ -9,7 +9,6 @@ import menya.core.Constants;
 import menya.core.document.ILayer;
 import menya.core.document.IPage;
 import menya.core.document.layers.CurveLayer;
-import menya.core.document.layers.ImageLayer;
 
 /**
  * Default Implementation of a Document.
@@ -22,8 +21,7 @@ public class Page implements IPage {
     private final ArrayDeque<ILayer> layers;
 
     // 210 mm x 297 mm is A4
-    private final Dimension2D size = new Dimension(
-            (int) (21.0 * Constants.CM_TO_PT),
+    private Dimension2D size = new Dimension((int) (21.0 * Constants.CM_TO_PT),
             (int) (29.7 * Constants.CM_TO_PT));
 
     /**
@@ -31,7 +29,7 @@ public class Page implements IPage {
      */
     public Page() {
         this.layers = new ArrayDeque<ILayer>();
-        this.layers.add(new ImageLayer());
+        // this.layers.add(new ImageLayer());
     }
 
     /** {@inheritDoc} */
@@ -59,5 +57,25 @@ public class Page implements IPage {
     /** {@inheritDoc} */
     public Dimension2D getPageSize() {
         return this.size;
+    }
+
+    /**
+     * Setter for page size.
+     * 
+     * @param newSize
+     *            the new Page size.
+     */
+    public void setPageSize(final Dimension2D newSize) {
+        this.size = (Dimension2D) newSize.clone();
+    }
+
+    /**
+     * Add a new layer on top of this page.
+     * 
+     * @param layer
+     *            the new layer.
+     */
+    public void addLayer(final ILayer layer) {
+        this.layers.add(layer);
     }
 }

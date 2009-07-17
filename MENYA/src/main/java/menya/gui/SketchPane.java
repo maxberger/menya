@@ -1,11 +1,13 @@
 package menya.gui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Dimension2D;
+import java.awt.geom.Rectangle2D;
 
 import javax.swing.JComponent;
 
@@ -81,6 +83,11 @@ public class SketchPane extends JComponent {
         final Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setColor(Color.WHITE);
+        final Dimension2D pageSize = this.currentPage.getPageSize();
+
+        g2d.fill(new Rectangle2D.Double(0, 0, pageSize.getWidth(), pageSize
+                .getHeight()));
 
         for (final ILayer l : this.currentPage.getLayers()) {
             for (final GraphicalData gd : l.getGraphicalData()) {

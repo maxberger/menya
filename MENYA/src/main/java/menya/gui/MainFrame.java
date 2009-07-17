@@ -23,6 +23,8 @@ package menya.gui;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
+import javax.swing.JFileChooser;
+
 /**
  * The main frame of Menya.
  * 
@@ -48,11 +50,13 @@ public class MainFrame extends javax.swing.JFrame {
      */
     // <editor-fold defaultstate="collapsed"
     // <editor-fold defaultstate="collapsed"
+    // <editor-fold defaultstate="collapsed"
     // desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         this.jToolBar1 = new javax.swing.JToolBar();
-        this.jButton1 = new javax.swing.JButton();
+        this.buttonFullscreen = new javax.swing.JButton();
+        this.buttonOpen = new javax.swing.JButton();
         this.jScrollPane1 = new javax.swing.JScrollPane();
         this.sketchPane1 = new menya.gui.PagePanel();
 
@@ -63,22 +67,40 @@ public class MainFrame extends javax.swing.JFrame {
 
         this.jToolBar1.setRollover(true);
 
-        this.jButton1.setIcon(new javax.swing.ImageIcon(this.getClass()
+        this.buttonFullscreen.setIcon(new javax.swing.ImageIcon(this.getClass()
                 .getResource("/view-fullscreen.png"))); // NOI18N
-        this.jButton1.setText("Fullscreen");
-        this.jButton1.setToolTipText("Enter / Exit Full Screen Mode");
-        this.jButton1.setEnabled(this.device.isFullScreenSupported());
-        this.jButton1.setFocusable(false);
-        this.jButton1
+        this.buttonFullscreen.setText("Fullscreen");
+        this.buttonFullscreen.setToolTipText("Enter / Exit Full Screen Mode");
+        this.buttonFullscreen.setEnabled(this.device.isFullScreenSupported());
+        this.buttonFullscreen.setFocusable(false);
+        this.buttonFullscreen
                 .setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        this.jButton1
+        this.buttonFullscreen
                 .setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        this.jButton1.addActionListener(new java.awt.event.ActionListener() {
+        this.buttonFullscreen
+                .addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(
+                            final java.awt.event.ActionEvent evt) {
+                        MainFrame.this.fullScreen(evt);
+                    }
+                });
+        this.jToolBar1.add(this.buttonFullscreen);
+
+        this.buttonOpen.setIcon(new javax.swing.ImageIcon(this.getClass()
+                .getResource("/document-open.png"))); // NOI18N
+        this.buttonOpen.setText("Open");
+        this.buttonOpen.setToolTipText("Open an existing Document");
+        this.buttonOpen.setFocusable(false);
+        this.buttonOpen
+                .setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        this.buttonOpen
+                .setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        this.buttonOpen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(final java.awt.event.ActionEvent evt) {
-                MainFrame.this.fullScreen(evt);
+                MainFrame.this.openDocument(evt);
             }
         });
-        this.jToolBar1.add(this.jButton1);
+        this.jToolBar1.add(this.buttonOpen);
 
         this.getContentPane().add(this.jToolBar1, java.awt.BorderLayout.NORTH);
 
@@ -87,10 +109,10 @@ public class MainFrame extends javax.swing.JFrame {
         this.sketchPane1.setLayout(sketchPane1Layout);
         sketchPane1Layout.setHorizontalGroup(sketchPane1Layout
                 .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGap(0, 800, Short.MAX_VALUE));
+                .addGap(0, 595, Short.MAX_VALUE));
         sketchPane1Layout.setVerticalGroup(sketchPane1Layout
                 .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGap(0, 600, Short.MAX_VALUE));
+                .addGap(0, 1682, Short.MAX_VALUE));
 
         this.jScrollPane1.setViewportView(this.sketchPane1);
 
@@ -99,6 +121,15 @@ public class MainFrame extends javax.swing.JFrame {
 
         this.pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void openDocument(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_openDocument
+        // TODO: Use a better file chooser, use Webstart / OSX specific hooks.
+        final JFileChooser chooser = new JFileChooser();
+        chooser.showOpenDialog(this);
+        final String filename = chooser.getSelectedFile().getAbsolutePath();
+        this.sketchPane1.load(filename);
+        this.validate();
+    }// GEN-LAST:event_openDocument
 
     private void fullScreen(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_fullScreen
         this.isFullscreen = !this.isFullscreen;
@@ -116,7 +147,8 @@ public class MainFrame extends javax.swing.JFrame {
     }// GEN-LAST:event_fullScreen
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton buttonFullscreen;
+    private javax.swing.JButton buttonOpen;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar jToolBar1;
     private menya.gui.PagePanel sketchPane1;
