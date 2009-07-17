@@ -8,6 +8,7 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
 
@@ -49,6 +50,8 @@ public class SketchPane extends JComponent {
 
     private Curve currentCurve;
 
+    private BufferedImage cachedImage;
+
     /**
      * Default constructor.
      * 
@@ -80,22 +83,40 @@ public class SketchPane extends JComponent {
     @Override
     protected void paintComponent(final Graphics g) {
         super.paintComponent(g);
-        final Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setColor(Color.WHITE);
-        final Dimension2D pageSize = this.currentPage.getPageSize();
-
-        g2d.fill(new Rectangle2D.Double(0, 0, pageSize.getWidth(), pageSize
-                .getHeight()));
 
         for (final ILayer l : this.currentPage.getLayers()) {
-            for (final GraphicalData gd : l.getGraphicalData()) {
-                gd.draw(g2d);
+            if (l.hasChanged()) {
+                this.cachedImage = null;
             }
         }
+        if (this.cachedImage == null) {
+            final Dimension2D pageSize = this.currentPage.getPageSize();
+            final BufferedImage img = new BufferedImage((int) Math
+                    .ceil(pageSize.getWidth()), (int) Math.ceil(pageSize
+                    .getHeight()), BufferedImage.TYPE_INT_RGB);
+
+            final Graphics2D g2dImage = img.createGraphics();
+            g2dImage.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+            g2dImage.setColor(Color.WHITE);
+            g2dImage.fill(new Rectangle2D.Double(0, 0, pageSize.getWidth(),
+                    pageSize.getHeight()));
+
+            for (final ILayer l : this.currentPage.getLayers()) {
+                for (final GraphicalData gd : l.getGraphicalData()) {
+                    gd.draw(g2dImage);
+                }
+            }
+            this.cachedImage = img;
+        }
+
+        final Graphics2D g2dReal = (Graphics2D) g;
+        g2dReal.drawImage(this.cachedImage, null, 0, 0);
+        g2dReal.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+
         if (this.currentCurve != null) {
-            this.currentCurve.draw(g2d);
+            this.currentCurve.draw(g2dReal);
         }
     }
 

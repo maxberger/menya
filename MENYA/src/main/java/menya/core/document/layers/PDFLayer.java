@@ -68,4 +68,11 @@ public class PDFLayer extends ALayer {
         final List<GraphicalData> g = l;
         return g;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasChanged() {
+        return false;
+    }
+
 }

@@ -66,4 +66,10 @@ public class ImageLayer extends ALayer {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasChanged() {
+        return false;
+    }
+
 }

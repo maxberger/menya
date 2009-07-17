@@ -36,6 +36,8 @@ public class CurveLayer extends ALayer {
 
     private final List<Curve> curves = new ArrayList<Curve>();
 
+    private boolean hasChanged = true;
+
     /**
      * Default constructor.
      */
@@ -48,6 +50,7 @@ public class CurveLayer extends ALayer {
     public Iterable<GraphicalData> getGraphicalData() {
         final Iterable<Curve> i = this.curves;
         final Iterable d = i;
+        this.hasChanged = false;
         return d;
     }
 
@@ -58,7 +61,14 @@ public class CurveLayer extends ALayer {
      *            the curve to add.
      */
     public void addCurve(final Curve curve) {
+        this.hasChanged = true;
         this.curves.add(curve);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasChanged() {
+        return this.hasChanged;
     }
 
 }
