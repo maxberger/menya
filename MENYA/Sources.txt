@@ -6,5 +6,6 @@ file: paper.jpg
 derived from above 2367382540_a2d7b51a5d_b.jpg
 
 file: view-fullscreen.png
+file: document-open.png
 source: Tango Icon Theme
 License: Public Domain

@@ -1,6 +1,7 @@
 package menya.gui;
 
 import java.awt.Dimension;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class PagePanel extends JPanel {
      */
     private static final long serialVersionUID = 1L;
 
-    private final IDocument currentDocument;
+    private IDocument currentDocument;
 
     private final List<SketchPane> pagePanes = new ArrayList<SketchPane>();
 
@@ -32,7 +33,7 @@ public class PagePanel extends JPanel {
      */
     public PagePanel() {
         super();
-        this.currentDocument = new Document();
+        this.currentDocument = Document.emptyDocument();
         this.reload();
     }
 
@@ -48,7 +49,21 @@ public class PagePanel extends JPanel {
             y += p.getHeight();
         }
         this.validate();
+    }
 
+    /**
+     * Loads a given file into this panel.
+     * 
+     * @param filename
+     *            the File to load.
+     */
+    public void load(final String filename) {
+        try {
+            this.currentDocument = Document.fromPDF(filename);
+        } catch (final IOException e) {
+            this.currentDocument = Document.emptyDocument();
+        }
+        this.reload();
     }
 
     /** {@inheritDoc} */
