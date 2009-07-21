@@ -62,7 +62,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>appassembler-maven-plugin</artifactId>
-				<version>1.0-beta-2</version>
+				<version>1.0</version>
 				<configuration>
 					<programs>
 						<program>
@@ -125,7 +125,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.2</version>
+				<version>2.3</version>
 				<configuration>
 					<configLocation>checkstyle.xml</configLocation>
 				</configuration>
