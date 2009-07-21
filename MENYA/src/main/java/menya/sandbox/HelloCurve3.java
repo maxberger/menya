@@ -1,3 +1,4 @@
+// CHECKSTYLE:OFF This is a sandbox file.
 package menya.sandbox;
 
 import java.awt.Color;
@@ -22,6 +23,8 @@ import javax.swing.SwingUtilities;
  * @version $Revision$
  */
 public class HelloCurve3 extends JComponent {
+
+    private static final long serialVersionUID = 1L;
 
     static double[][] POINTS = { { 100, 300, 5 }, { 200, 200, 5 },
             { 300, 200, 5 }, { 400, 300, 7 }, { 500, 300, 10 },

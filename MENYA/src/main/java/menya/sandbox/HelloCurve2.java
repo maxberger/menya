@@ -1,3 +1,4 @@
+// CHECKSTYLE:OFF This is a sandbox file.
 package menya.sandbox;
 
 import java.awt.Graphics;
@@ -8,15 +9,14 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 public class HelloCurve2 extends JComponent {
+
+    private static final long serialVersionUID = 1L;
 
     private static class TestPathIterator implements PathIterator {
 
@@ -25,7 +25,7 @@ public class HelloCurve2 extends JComponent {
                 { 750, 100 }, { 650, 150 }, { 600, 100 }, { 500, 50 },
                 { 400, 150 } };
 
-        final int count = points.length;
+        final int count = TestPathIterator.points.length;
 
         static final double POINTINESS = 0.3;
 
@@ -35,62 +35,62 @@ public class HelloCurve2 extends JComponent {
 
         }
 
-        public int currentSegment(float[] arg0) {
-            double[] d = new double[arg0.length];
-            int retVal = this.currentSegment(d);
+        public int currentSegment(final float[] arg0) {
+            final double[] d = new double[arg0.length];
+            final int retVal = this.currentSegment(d);
             for (int i = 0; i < arg0.length; i++) {
                 arg0[i] = (float) d[i];
             }
             return retVal;
         }
 
-        public int currentSegment(double[] d) {
-            int retVal = SEG_CLOSE;
+        public int currentSegment(final double[] d) {
+            int retVal = PathIterator.SEG_CLOSE;
 
-            if (current == 0) {
-                retVal = SEG_MOVETO;
-                d[0] = points[current][0];
-                d[1] = points[current][1];
-            } else if (current == 1) {
-                d[0] = points[current][0]
-                        + (points[current + 1][0] - points[current][0])
-                        * POINTINESS;
-                d[1] = points[current][1]
-                        + (points[current + 1][1] - points[current][1])
-                        * POINTINESS;
+            if (this.current == 0) {
+                retVal = PathIterator.SEG_MOVETO;
+                d[0] = TestPathIterator.points[this.current][0];
+                d[1] = TestPathIterator.points[this.current][1];
+            } else if (this.current == 1) {
+                d[0] = TestPathIterator.points[this.current][0]
+                        + (TestPathIterator.points[this.current + 1][0] - TestPathIterator.points[this.current][0])
+                        * TestPathIterator.POINTINESS;
+                d[1] = TestPathIterator.points[this.current][1]
+                        + (TestPathIterator.points[this.current + 1][1] - TestPathIterator.points[this.current][1])
+                        * TestPathIterator.POINTINESS;
 
-                d[2] = points[current][0]
-                        + (points[current][0] - points[current + 1][0])
-                        * POINTINESS;
-                d[3] = points[current][1]
-                        + (points[current][1] - points[current + 1][1])
-                        * POINTINESS;
-                d[4] = points[current][0];
-                d[5] = points[current][1];
+                d[2] = TestPathIterator.points[this.current][0]
+                        + (TestPathIterator.points[this.current][0] - TestPathIterator.points[this.current + 1][0])
+                        * TestPathIterator.POINTINESS;
+                d[3] = TestPathIterator.points[this.current][1]
+                        + (TestPathIterator.points[this.current][1] - TestPathIterator.points[this.current + 1][1])
+                        * TestPathIterator.POINTINESS;
+                d[4] = TestPathIterator.points[this.current][0];
+                d[5] = TestPathIterator.points[this.current][1];
 
-            } else if (current == count - 1) {
-                retVal = SEG_LINETO;
-                d[0] = points[current][0];
-                d[1] = points[current][1];
+            } else if (this.current == this.count - 1) {
+                retVal = PathIterator.SEG_LINETO;
+                d[0] = TestPathIterator.points[this.current][0];
+                d[1] = TestPathIterator.points[this.current][1];
             } else {
-                retVal = SEG_CUBICTO;
+                retVal = PathIterator.SEG_CUBICTO;
 
-                d[0] = points[current - 1][0]
-                        - (points[current - 1][0] - points[current][0])
-                        * POINTINESS;
-                d[1] = points[current - 1][1]
-                        - (points[current - 1][1] - points[current][1])
-                        * POINTINESS;
+                d[0] = TestPathIterator.points[this.current - 1][0]
+                        - (TestPathIterator.points[this.current - 1][0] - TestPathIterator.points[this.current][0])
+                        * TestPathIterator.POINTINESS;
+                d[1] = TestPathIterator.points[this.current - 1][1]
+                        - (TestPathIterator.points[this.current - 1][1] - TestPathIterator.points[this.current][1])
+                        * TestPathIterator.POINTINESS;
 
-                d[2] = points[current][0]
-                        + (points[current][0] - points[current + 1][0])
-                        * POINTINESS;
-                d[3] = points[current][1]
-                        + (points[current][1] - points[current + 1][1])
-                        * POINTINESS;
-                d[4] = points[current][0];
-                d[5] = points[current][1];
-                for (double dd : d) {
+                d[2] = TestPathIterator.points[this.current][0]
+                        + (TestPathIterator.points[this.current][0] - TestPathIterator.points[this.current + 1][0])
+                        * TestPathIterator.POINTINESS;
+                d[3] = TestPathIterator.points[this.current][1]
+                        + (TestPathIterator.points[this.current][1] - TestPathIterator.points[this.current + 1][1])
+                        * TestPathIterator.POINTINESS;
+                d[4] = TestPathIterator.points[this.current][0];
+                d[5] = TestPathIterator.points[this.current][1];
+                for (final double dd : d) {
                     System.out.print(" " + dd);
                 }
                 System.out.println();
@@ -99,34 +99,35 @@ public class HelloCurve2 extends JComponent {
         }
 
         public int getWindingRule() {
-            return WIND_NON_ZERO;
+            return PathIterator.WIND_NON_ZERO;
         }
 
         public boolean isDone() {
-            return current >= count;
+            return this.current >= this.count;
         }
 
         public void next() {
-            current++;
+            this.current++;
         }
 
     }
 
     private static class TestShape implements Shape {
 
-        public boolean contains(Point2D p) {
+        public boolean contains(final Point2D p) {
             return false;
         }
 
-        public boolean contains(Rectangle2D r) {
+        public boolean contains(final Rectangle2D r) {
             return false;
         }
 
-        public boolean contains(double x, double y) {
+        public boolean contains(final double x, final double y) {
             return false;
         }
 
-        public boolean contains(double x, double y, double w, double h) {
+        public boolean contains(final double x, final double y, final double w,
+                final double h) {
             return false;
         }
 
@@ -138,32 +139,34 @@ public class HelloCurve2 extends JComponent {
             return null;
         }
 
-        public PathIterator getPathIterator(AffineTransform at) {
+        public PathIterator getPathIterator(final AffineTransform at) {
             return new TestPathIterator();
         }
 
-        public PathIterator getPathIterator(AffineTransform at, double flatness) {
+        public PathIterator getPathIterator(final AffineTransform at,
+                final double flatness) {
             return this.getPathIterator(at);
         }
 
-        public boolean intersects(Rectangle2D r) {
+        public boolean intersects(final Rectangle2D r) {
             return false;
         }
 
-        public boolean intersects(double x, double y, double w, double h) {
+        public boolean intersects(final double x, final double y,
+                final double w, final double h) {
             return false;
         }
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
+    protected void paintComponent(final Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
+        final Graphics2D g2d = (Graphics2D) g;
 
         g2d.draw(new TestShape());
     }
 
-    public static void main(String args[]) {
+    public static void main(final String args[]) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 final JFrame mainFrame = new JFrame("Hello, Curve!");

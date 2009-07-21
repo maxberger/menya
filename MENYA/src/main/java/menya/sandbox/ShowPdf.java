@@ -1,3 +1,4 @@
+// CHECKSTYLE:OFF This is a sandbox file.
 package menya.sandbox;
 
 import java.awt.Color;
@@ -26,6 +27,8 @@ public class ShowPdf extends JComponent {
     private Dimension pageDimension;
     private PDPage page;
     private PageDrawer drawer;
+
+    private static final long serialVersionUID = 1L;
 
     public ShowPdf(final String filename) {
         try {

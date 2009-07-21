@@ -1,3 +1,4 @@
+// CHECKSTYLE:OFF This is a sandbox file.
 package menya.sandbox;
 
 import java.awt.Desktop;
