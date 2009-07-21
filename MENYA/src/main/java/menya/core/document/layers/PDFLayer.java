@@ -8,8 +8,11 @@ import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import menya.core.model.GraphicalData;
+import menya.gui.GUI;
 
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -23,6 +26,11 @@ import org.apache.pdfbox.pdmodel.PDPage;
  */
 public class PDFLayer extends ALayer {
 
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOGGER = Logger.getLogger(GUI.class.toString());
+
     private final PageDrawer drawer;
     private final PDPage page;
     private final Dimension dimension;
@@ -32,21 +40,25 @@ public class PDFLayer extends ALayer {
      * 
      * @param pddoc
      *            PDDocument
-     * @param drawer
+     * @param pgdrawer
      *            page drawer object
      * @param pdpage
      *            page object
      * @param pageDimension
      *            page dimensions
      */
-    public PDFLayer(final PDDocument pddoc, final PageDrawer drawer,
+    public PDFLayer(final PDDocument pddoc, final PageDrawer pgdrawer,
             final PDPage pdpage, final Dimension pageDimension) {
-        this.drawer = drawer;
+        this.drawer = pgdrawer;
         this.page = pdpage;
         this.dimension = pageDimension;
     }
 
     private class PDFGraphics implements GraphicalData {
+
+        protected PDFGraphics() {
+            // Empty on purpose.
+        }
 
         /** {@inheritDoc} */
         @Override
@@ -55,7 +67,7 @@ public class PDFLayer extends ALayer {
                 PDFLayer.this.drawer.drawPage(g2d, PDFLayer.this.page,
                         PDFLayer.this.dimension);
             } catch (final IOException io) {
-                // TODO: Log.
+                PDFLayer.LOGGER.log(Level.WARNING, "Failed to render page", io);
             }
         }
     }
