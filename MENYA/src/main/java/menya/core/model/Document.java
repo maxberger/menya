@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import menya.core.document.IDocument;
@@ -26,14 +27,14 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 public final class Document implements IDocument {
 
     /**
-     * 
-     */
-    private static final int LANDSCAPE_2 = 270;
-
-    /**
-     * 
+     * Rotated left (or right?).
      */
     private static final int LANDSCAPE_1 = 90;
+
+    /**
+     * Rotated right (or left?).
+     */
+    private static final int LANDSCAPE_2 = 270;
 
     /**
      * Logger for this class.
@@ -43,11 +44,17 @@ public final class Document implements IDocument {
 
     private final List<IPage> pages;
 
+    private final PDDocument pdfDocument;
+
     /**
      * Default Constructor.
+     * 
+     * @param underlayingDocument
+     *            Document this document is based on.
      */
-    private Document() {
+    private Document(final PDDocument underlayingDocument) {
         this.pages = new ArrayList<IPage>();
+        this.pdfDocument = underlayingDocument;
     }
 
     /** {@inheritDoc} */
@@ -61,7 +68,15 @@ public final class Document implements IDocument {
      * @return an empty Document with one page.
      */
     public static Document emptyDocument() {
-        final Document d = new Document();
+        PDDocument pddoc;
+        try {
+            pddoc = new PDDocument();
+        } catch (final IOException io) {
+            Document.LOGGER.log(Level.WARNING,
+                    "Failed to base Document on PDF", io);
+            pddoc = null;
+        }
+        final Document d = new Document(pddoc);
         d.pages.add(new Page());
         return d;
     }
@@ -78,7 +93,7 @@ public final class Document implements IDocument {
     public static Document fromPDF(final String filename) throws IOException {
         final PDDocument pddoc = PDDocument.load(filename);
         final PageDrawer drawer = new PageDrawer();
-        final Document d = new Document();
+        final Document d = new Document(pddoc);
 
         final List<?> pages = pddoc.getDocumentCatalog().getAllPages();
 
@@ -96,7 +111,7 @@ public final class Document implements IDocument {
                 }
                 final Page menyaPage = new Page();
                 menyaPage.setPageSize(pageDimension);
-                final ILayer pdfLayer = new PDFLayer(pddoc, drawer, pdpage,
+                final ILayer pdfLayer = new PDFLayer(drawer, pdpage,
                         pageDimension);
                 menyaPage.addLayer(pdfLayer);
                 d.pages.add(menyaPage);
@@ -106,5 +121,18 @@ public final class Document implements IDocument {
             }
         }
         return d;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void close() {
+        if (this.pdfDocument != null) {
+            try {
+                this.pdfDocument.close();
+            } catch (final IOException e) {
+                Document.LOGGER.log(Level.WARNING,
+                        "Failed to close PDFDocument", e);
+            }
+        }
     }
 }

@@ -34,4 +34,10 @@ public interface IDocument {
      * @return An unmodifiable view as list of pages in this document.
      */
     List<IPage> getPages();
+
+    /**
+     * Closes the document. <em>Should</em> be called before disposing the
+     * object.
+     */
+    void close();
 }

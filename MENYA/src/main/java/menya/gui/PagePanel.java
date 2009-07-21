@@ -58,6 +58,9 @@ public class PagePanel extends JPanel {
      *            the File to load.
      */
     public void load(final String filename) {
+        if (this.currentDocument != null) {
+            this.currentDocument.close();
+        }
         try {
             this.currentDocument = Document.fromPDF(filename);
         } catch (final IOException e) {
