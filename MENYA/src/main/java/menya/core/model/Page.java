@@ -18,18 +18,28 @@ import menya.core.document.layers.CurveLayer;
  */
 public class Page implements IPage {
 
+    /**
+     * 
+     */
+    private static final double A4_HEIGHT = 29.7;
+
+    /**
+     * 
+     */
+    private static final double A4_WIDTH = 21.0;
+
     private final ArrayDeque<ILayer> layers;
 
     // 210 mm x 297 mm is A4
-    private Dimension2D size = new Dimension((int) (21.0 * Constants.CM_TO_PT),
-            (int) (29.7 * Constants.CM_TO_PT));
+    private Dimension2D size = new Dimension(
+            (int) (Page.A4_WIDTH * Constants.CM_TO_PT),
+            (int) (Page.A4_HEIGHT * Constants.CM_TO_PT));
 
     /**
      * Default Constructor.
      */
     public Page() {
         this.layers = new ArrayDeque<ILayer>();
-        // this.layers.add(new ImageLayer());
     }
 
     /** {@inheritDoc} */
