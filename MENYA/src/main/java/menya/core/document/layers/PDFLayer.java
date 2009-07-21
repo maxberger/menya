@@ -15,7 +15,6 @@ import menya.core.model.GraphicalData;
 import menya.gui.GUI;
 
 import org.apache.pdfbox.pdfviewer.PageDrawer;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
 /**
@@ -38,8 +37,6 @@ public class PDFLayer extends ALayer {
     /**
      * Create a new PDF based layer.
      * 
-     * @param pddoc
-     *            PDDocument
      * @param pgdrawer
      *            page drawer object
      * @param pdpage
@@ -47,8 +44,8 @@ public class PDFLayer extends ALayer {
      * @param pageDimension
      *            page dimensions
      */
-    public PDFLayer(final PDDocument pddoc, final PageDrawer pgdrawer,
-            final PDPage pdpage, final Dimension pageDimension) {
+    public PDFLayer(final PageDrawer pgdrawer, final PDPage pdpage,
+            final Dimension pageDimension) {
         this.drawer = pgdrawer;
         this.page = pdpage;
         this.dimension = pageDimension;
