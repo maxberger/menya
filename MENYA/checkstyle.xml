@@ -156,4 +156,9 @@
         <property name="offCommentFormat" value="GEN-BEGIN"/>
         <property name="onCommentFormat" value="GEN-END"/>
     </module>
+<!-- Checkstyle 5.0 -->
+<!--    <module name="SuppressionWithNearbyCommentFilter">
+        <property name="commentFormat" value="GEN-\w+"/>
+        <property name="checkFormat" value=".*"/>
+    </module> -->
 </module>
