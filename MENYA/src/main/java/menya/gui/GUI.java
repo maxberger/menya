@@ -20,6 +20,9 @@
 
 package menya.gui;
 
+import java.io.File;
+import java.lang.reflect.Field;
+
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -46,6 +49,16 @@ public final class GUI {
      * Logger for this class.
      */
     private static final Logger LOGGER = Logger.getLogger(GUI.class);
+
+    /**
+     * 
+     */
+    private static final String BASEDIR = "basedir";
+
+    /**
+     * 
+     */
+    private static final String JAVA_LIBRARY_PATH = "java.library.path";
 
     /**
      * is the empty private constructor.
@@ -75,6 +88,8 @@ public final class GUI {
         // TODO create menya core class (respecting switches/flags passed)
         // TODO load file if wanted by argument
 
+        GUI.setLibraryPath();
+
         if (GUI.OSX) {
             //$NON-NLS-1$ //$NON-NLS-2$
             System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -98,5 +113,44 @@ public final class GUI {
                 mainFrame.setVisible(true);
             }
         });
+    }
+
+    /**
+     * Sets java.library.path if basedir is set.
+     * <p>
+     * This methods employs a terrible hack: java.library.path is only checked
+     * when the internal sys_paths variable is null, e.g. once at startup. In
+     * this case, it is reset to null to force re-evaluation of the system
+     * variable.
+     */
+    private static void setLibraryPath() {
+        final String oldPath = System.getProperty(GUI.JAVA_LIBRARY_PATH);
+        final String basedir = System.getProperty(GUI.BASEDIR);
+        if (basedir != null) {
+            final StringBuilder newPath = new StringBuilder(basedir).append(
+                    File.separatorChar).append("jni");
+            if (oldPath != null) {
+                newPath.append(File.pathSeparatorChar).append(oldPath);
+            }
+            try {
+                final Class<?> clazz = ClassLoader.class;
+                final Field field = clazz.getDeclaredField("sys_paths");
+                final boolean accessible = field.isAccessible();
+                if (!accessible) {
+                    field.setAccessible(true);
+                }
+                field.set(clazz, null);
+                field.setAccessible(accessible);
+                // CHECKSTYLE:OFF In this case a catch-all is needed due to
+                // unpredictable reflection errors!
+            } catch (final Throwable e) {
+                // CHECKSTYLE:ON
+                GUI.LOGGER
+                        .info("Failed to employ library hack, pen functionality may be inacessible.\n"
+                                + e.getMessage());
+            }
+
+            System.setProperty(GUI.JAVA_LIBRARY_PATH, newPath.toString());
+        }
     }
 }
