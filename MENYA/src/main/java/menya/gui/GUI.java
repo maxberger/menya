@@ -22,13 +22,13 @@ package menya.gui;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-
-import org.apache.log4j.Logger;
 
 /**
  * This class represents the graphical user interface to MENYA. The main class
@@ -48,7 +48,7 @@ public final class GUI {
     /**
      * Logger for this class.
      */
-    private static final Logger LOGGER = Logger.getLogger(GUI.class);
+    private static final Logger LOGGER = Logger.getLogger(GUI.class.toString());
 
     /**
      * 
@@ -98,13 +98,13 @@ public final class GUI {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (final ClassNotFoundException e) {
-            GUI.LOGGER.debug(e);
+            GUI.LOGGER.log(Level.FINE, e.getMessage(), e);
         } catch (final InstantiationException e) {
-            GUI.LOGGER.debug(e);
+            GUI.LOGGER.log(Level.FINE, e.getMessage(), e);
         } catch (final IllegalAccessException e) {
-            GUI.LOGGER.debug(e);
+            GUI.LOGGER.log(Level.FINE, e.getMessage(), e);
         } catch (final UnsupportedLookAndFeelException e) {
-            GUI.LOGGER.debug(e);
+            GUI.LOGGER.log(Level.FINE, e.getMessage(), e);
         }
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -146,8 +146,10 @@ public final class GUI {
             } catch (final Throwable e) {
                 // CHECKSTYLE:ON
                 GUI.LOGGER
-                        .info("Failed to employ library hack, pen functionality may be inacessible.\n"
-                                + e.getMessage());
+                        .log(
+                                Level.INFO,
+                                "Failed to employ library hack, pen functionality may be inacessible.",
+                                e);
             }
 
             System.setProperty(GUI.JAVA_LIBRARY_PATH, newPath.toString());
