@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 import menya.core.document.IDocument;
 import menya.core.document.ILayer;
@@ -22,7 +23,23 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  * @author Max
  * @version $Revision$
  */
-public class Document implements IDocument {
+public final class Document implements IDocument {
+
+    /**
+     * 
+     */
+    private static final int LANDSCAPE_2 = 270;
+
+    /**
+     * 
+     */
+    private static final int LANDSCAPE_1 = 90;
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOGGER = Logger.getLogger(Document.class
+            .toString());
 
     private final List<IPage> pages;
 
@@ -71,7 +88,8 @@ public class Document implements IDocument {
                 final PDRectangle pageSize = pdpage.findMediaBox();
                 final int rotation = pdpage.findRotation();
                 Dimension pageDimension = pageSize.createDimension();
-                if (rotation == 90 || rotation == 270) {
+                if (rotation == Document.LANDSCAPE_1
+                        || rotation == Document.LANDSCAPE_2) {
                     pageDimension = new Dimension(pageDimension.height,
                             pageDimension.width);
                     // TODO : check rotation = 0 || 180
@@ -83,7 +101,8 @@ public class Document implements IDocument {
                 menyaPage.addLayer(pdfLayer);
                 d.pages.add(menyaPage);
             } else {
-                // TODO: Log!
+                Document.LOGGER.warning("Unknown Class in PageList: "
+                        + pg.getClass());
             }
         }
         return d;
