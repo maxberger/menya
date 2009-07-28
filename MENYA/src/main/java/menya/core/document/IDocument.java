@@ -20,12 +20,14 @@
 
 package menya.core.document;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
  * This interfaces represents a MENYA annotation document.
  * 
  * @author Dominik
+ * @author Max
  * @version $Revision$
  */
 public interface IDocument {
@@ -40,4 +42,14 @@ public interface IDocument {
      * object.
      */
     void close();
+
+     /**
+     * Create a PDF from the current document.
+     *
+     * @param filename
+     *            filename to save as
+     * @throws IOException
+     *             if saving fails.
+     */
+    void toPDF(final String filename) throws IOException;
 }
