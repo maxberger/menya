@@ -6,10 +6,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,9 +27,12 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
+import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.util.PDFOperator;
 
 /**
  * Default Implementation of a Document.
@@ -135,6 +141,7 @@ public final class Document implements IDocument {
         for (final Object pg : pages) {
             if (pg instanceof PDPage) {
                 final PDPage pdpage = (PDPage) pg;
+                Document.removeMenyaLayers(pdpage, pddoc);
                 Document.createMenyaPage(drawer, d, pdpage);
             } else {
                 Document.LOGGER.warning("Unknown Class in PageList: "
@@ -142,6 +149,56 @@ public final class Document implements IDocument {
             }
         }
         return d;
+    }
+
+    /**
+     * @param pdpage
+     */
+    private static void removeMenyaLayers(final PDPage pdpage,
+            final PDDocument pddoc) throws IOException {
+        try {
+            final List<?> tokens = pdpage.getContents().getStream()
+                    .getStreamTokens();
+            final Deque<COSBase> arguments = new LinkedList<COSBase>();
+            final PDStream pds = new PDStream(pddoc);
+            pds.addCompression();
+            final OutputStream os = pds.createOutputStream();
+            final COSWriter writer = new COSWriter(os);
+
+            boolean invisa = false;
+            for (final Object t : tokens) {
+                if (t instanceof COSBase) {
+                    arguments.addLast((COSBase) t);
+                } else if (t instanceof PDFOperator) {
+                    final PDFOperator o = (PDFOperator) t;
+                    if ("BDC".equals(o.getOperation())) {
+                        // TODO: This filters ALL Layers, but it should only
+                        // filter menya layers.
+                        arguments.clear();
+                        invisa = true;
+                    }
+                    if (!invisa) {
+                        while (!arguments.isEmpty()) {
+                            final COSBase b = arguments.removeFirst();
+                            b.accept(writer);
+                            os.write(COSWriter.SPACE);
+                        }
+                        os.write(o.getOperation().getBytes());
+                        os.write(COSWriter.SPACE);
+                    }
+                    if ("EMC".equals(o.getOperation())) {
+                        invisa = false;
+                    }
+                } else {
+                    Document.LOGGER.warning("Unsupported Token: "
+                            + t.getClass());
+                }
+            }
+            writer.close();
+            pdpage.setContents(pds);
+        } catch (final COSVisitorException e) {
+            throw new IOException("Error filtering ContentStream", e);
+        }
     }
 
     /**
