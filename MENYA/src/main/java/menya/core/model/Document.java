@@ -22,8 +22,10 @@ import menya.core.document.ILayer;
 import menya.core.document.IPage;
 import menya.core.document.layers.PDFLayer;
 
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
@@ -32,6 +34,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.util.PDFOperator;
 
 /**
@@ -284,7 +287,8 @@ public final class Document implements IDocument {
                     throw new IOException(
                             "Failed to find PDF Layer in all pages");
                 }
-                this.storeMenyaLayers(now, menyaLayers, pdfLayer);
+                Document.storeMenyaLayers(now, menyaLayers, pdfLayer,
+                        this.pdfDocument);
             }
             this.pdfDocument.save(filename);
         } catch (final COSVisitorException e) {
@@ -298,10 +302,72 @@ public final class Document implements IDocument {
      * @param pdfLayer
      * @throws IOException
      */
-    private void storeMenyaLayers(final Calendar now,
-            final List<Serializable> menyaLayers, final PDFLayer pdfLayer)
-            throws IOException {
+    private static void storeMenyaLayers(final Calendar now,
+            final List<Serializable> menyaLayers, final PDFLayer pdfLayer,
+            final PDDocument pddoc) throws IOException {
         final PDPage pdpage = pdfLayer.getPage();
+        Document.storeGraphicalMenyaData(menyaLayers, pdpage, pddoc);
+        Document.storeSerializedMenyaData(now, menyaLayers, pdpage);
+    }
+
+    /**
+     * @param menyaLayers
+     * @param pdpage
+     * @throws IOException
+     */
+    private static void storeGraphicalMenyaData(
+            final List<Serializable> menyaLayers, final PDPage pdpage,
+            final PDDocument pddoc) throws IOException {
+        final COSDictionary ocg = Document.createMenyaPDFLayers(pddoc);
+
+        final COSDictionary properties = Document.getAndCreateDict(pdpage
+                .getResources().getCOSDictionary(), "Properties");
+        properties.setItem("MC0", ocg);
+
+        final PDPageContentStream contentStream = new PDPageContentStream(
+                pddoc, pdpage, true, true);
+        contentStream.appendRawCommands("/OC /MC0 BDC ");
+
+        // TODO: Add content here.
+
+        contentStream.appendRawCommands(" EMC");
+        contentStream.close();
+
+    }
+
+    /**
+     * @param pddoc
+     */
+    private static COSDictionary createMenyaPDFLayers(final PDDocument pddoc) {
+        final COSArray intentArray = new COSArray();
+        intentArray.add(COSName.getPDFName("View"));
+        intentArray.add(COSName.getPDFName("Design"));
+        final COSDictionary ocg = new COSDictionary();
+        ocg.setName("Type", "OCG");
+        ocg.setString("Name", "Layer 1");
+        ocg.setItem("Intent", intentArray);
+
+        final COSDictionary ocp = Document.getAndCreateDict(pddoc
+                .getDocumentCatalog().getCOSDictionary(), "OCProperties");
+        final COSDictionary d = Document.getAndCreateDict(ocp, "D");
+        final COSArray order = Document.getAndCreateArray(d, "Order");
+        order.add(ocg);
+        final COSArray on = Document.getAndCreateArray(d, "ON");
+        on.add(ocg);
+        final COSArray ocgs = Document.getAndCreateArray(ocp, "OCGs");
+        ocgs.add(ocg);
+        return ocg;
+    }
+
+    /**
+     * @param now
+     * @param menyaLayers
+     * @param pdpage
+     * @throws IOException
+     */
+    private static void storeSerializedMenyaData(final Calendar now,
+            final List<Serializable> menyaLayers, final PDPage pdpage)
+            throws IOException {
         final COSDictionary pieceInfo = Document.getPieceInfo(pdpage);
         final COSDictionary menyaDict = Document.getAndCreateDict(pieceInfo,
                 Document.PDF_MENYA_DICT);
@@ -356,6 +422,16 @@ public final class Document implements IDocument {
             parent.setItem(name, dict);
         }
         return dict;
+    }
+
+    private static COSArray getAndCreateArray(final COSDictionary parent,
+            final String name) {
+        COSArray a = (COSArray) parent.getItem(COSName.getPDFName(name));
+        if (a == null) {
+            a = new COSArray();
+            parent.setItem(name, a);
+        }
+        return a;
     }
 
     private static COSDictionary getPieceInfo(final PDPage page) {
