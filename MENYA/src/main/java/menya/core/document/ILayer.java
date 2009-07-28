@@ -29,6 +29,7 @@ import menya.core.model.GraphicalData;
  * @see menya.core.document.IDocument
  * @see menya.core.model.GraphicalData
  * @author Dominik
+ * @author Max
  * @version $Revision$
  */
 public interface ILayer {
@@ -40,7 +41,7 @@ public interface ILayer {
     Iterable<GraphicalData> getGraphicalData();
 
     /**
-     * Simple check if this layer has changed since {{@link #getGraphicalData()}
+     * Simple check if this layer has changed since {@link #getGraphicalData()}
      * was last called.
      * <p>
      * If getGraphicalData was never called the result is undefined.
