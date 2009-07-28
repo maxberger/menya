@@ -1,8 +1,10 @@
 package menya.core.model;
 
 import java.awt.Dimension;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ import menya.core.document.ILayer;
 import menya.core.document.IPage;
 import menya.core.document.layers.PDFLayer;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -32,6 +35,26 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  * @version $Revision$
  */
 public final class Document implements IDocument {
+
+    /**
+     * 
+     */
+    private static final String PDF_PIECE_INFO = "PieceInfo";
+
+    /**
+     * 
+     */
+    private static final String PDF_LAYER_PREFIX = "Layer";
+
+    /**
+     * 
+     */
+    private static final String PDF_PRIVATE = "Private";
+
+    /**
+     * 
+     */
+    private static final String PDF_MENYA_DICT = "Menya";
 
     /**
      * 
@@ -112,27 +135,68 @@ public final class Document implements IDocument {
         for (final Object pg : pages) {
             if (pg instanceof PDPage) {
                 final PDPage pdpage = (PDPage) pg;
-                final PDRectangle pageSize = pdpage.findMediaBox();
-                final int rotation = pdpage.findRotation();
-                Dimension pageDimension = pageSize.createDimension();
-                if (rotation == Document.LANDSCAPE_1
-                        || rotation == Document.LANDSCAPE_2) {
-                    pageDimension = new Dimension(pageDimension.height,
-                            pageDimension.width);
-                    // TODO : check rotation = 0 || 180
-                }
-                final Page menyaPage = new Page();
-                menyaPage.setPageSize(pageDimension);
-                final ILayer pdfLayer = new PDFLayer(drawer, pdpage,
-                        pageDimension);
-                menyaPage.addLayer(pdfLayer);
-                d.pages.add(menyaPage);
+                Document.createMenyaPage(drawer, d, pdpage);
             } else {
                 Document.LOGGER.warning("Unknown Class in PageList: "
                         + pg.getClass());
             }
         }
         return d;
+    }
+
+    /**
+     * @param drawer
+     * @param d
+     * @param pdpage
+     */
+    private static void createMenyaPage(final PageDrawer drawer,
+            final Document d, final PDPage pdpage) throws IOException {
+        final PDRectangle pageSize = pdpage.findMediaBox();
+        final int rotation = pdpage.findRotation();
+        Dimension pageDimension = pageSize.createDimension();
+        if (rotation == Document.LANDSCAPE_1
+                || rotation == Document.LANDSCAPE_2) {
+            pageDimension = new Dimension(pageDimension.height,
+                    pageDimension.width);
+            // TODO : check rotation = 0 || 180
+        }
+        final Page menyaPage = new Page();
+        menyaPage.setPageSize(pageDimension);
+        final ILayer pdfLayer = new PDFLayer(drawer, pdpage, pageDimension);
+        menyaPage.addLayer(pdfLayer);
+        Document.extractSerializedLayers(pdpage, menyaPage);
+        d.pages.add(menyaPage);
+    }
+
+    /**
+     * @param pdpage
+     * @param menyaPage
+     */
+    private static void extractSerializedLayers(final PDPage pdpage,
+            final Page menyaPage) throws IOException {
+        // TODO: Check LastModified to ensure menya metadata is still current.
+        try {
+            final COSDictionary pieceInfo = Document.getPieceInfo(pdpage);
+            final COSDictionary menyaDict = Document.getAndCreateDict(
+                    pieceInfo, Document.PDF_MENYA_DICT);
+            final COSDictionary privateDict = Document.getAndCreateDict(
+                    menyaDict, Document.PDF_PRIVATE);
+            int i = 0;
+            COSBase cb = privateDict.getDictionaryObject(Document
+                    .getLayerName(i));
+            while (cb instanceof COSString) {
+                final COSString cs = (COSString) cb;
+                final byte[] buf = cs.getBytes();
+                final ByteArrayInputStream bis = new ByteArrayInputStream(buf);
+                final ObjectInputStream ois = new ObjectInputStream(bis);
+                final ILayer layer = (ILayer) ois.readObject();
+                menyaPage.addLayer(layer);
+                i++;
+                cb = privateDict.getDictionaryObject(Document.getLayerName(i));
+            }
+        } catch (final ClassNotFoundException e) {
+            throw new IOException("Failed to read embedded Menya Layer", e);
+        }
     }
 
     /** {@inheritDoc} */
@@ -157,44 +221,74 @@ public final class Document implements IDocument {
         try {
             final Calendar now = Calendar.getInstance();
             for (final IPage page : this.pages) {
-                PDFLayer pdfLayer = null;
                 final List<Serializable> menyaLayers = new ArrayList<Serializable>();
-                for (final ILayer layer : page.getLayers()) {
-                    if (layer instanceof PDFLayer) {
-                        pdfLayer = (PDFLayer) layer;
-                    } else if (layer instanceof Serializable) {
-                        menyaLayers.add((Serializable) layer);
-                    }
-                }
+                final PDFLayer pdfLayer = this.findPDFLayer(page, menyaLayers);
                 if (pdfLayer == null) {
                     throw new IOException(
                             "Failed to find PDF Layer in all pages");
                 }
-                final PDPage pdpage = pdfLayer.getPage();
-                final COSDictionary pieceInfo = Document.getPieceInfo(pdpage);
-                final COSDictionary menyaDict = Document.getAndCreateDict(
-                        pieceInfo, "Menya");
-                pdpage.getCOSDictionary().setDate(Document.PDF_LAST_MODIFIED,
-                        now);
-                menyaDict.setDate(Document.PDF_LAST_MODIFIED, now);
-                final COSDictionary privateDict = Document.getAndCreateDict(
-                        menyaDict, "Private");
-
-                privateDict.clear();
-                for (int i = 0; i < menyaLayers.size(); i++) {
-                    final String name = new StringBuilder("Layer").append(i)
-                            .toString();
-                    final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    final ObjectOutputStream oos = new ObjectOutputStream(bos);
-                    oos.writeObject(menyaLayers.get(i));
-                    oos.close();
-                    privateDict.setItem(name, new COSString(bos.toByteArray()));
-                }
+                this.storeMenyaLayers(now, menyaLayers, pdfLayer);
             }
             this.pdfDocument.save(filename);
         } catch (final COSVisitorException e) {
             throw new IOException("Failure during save as PDF", e);
         }
+    }
+
+    /**
+     * @param now
+     * @param menyaLayers
+     * @param pdfLayer
+     * @throws IOException
+     */
+    private void storeMenyaLayers(final Calendar now,
+            final List<Serializable> menyaLayers, final PDFLayer pdfLayer)
+            throws IOException {
+        final PDPage pdpage = pdfLayer.getPage();
+        final COSDictionary pieceInfo = Document.getPieceInfo(pdpage);
+        final COSDictionary menyaDict = Document.getAndCreateDict(pieceInfo,
+                Document.PDF_MENYA_DICT);
+        pdpage.getCOSDictionary().setDate(Document.PDF_LAST_MODIFIED, now);
+        menyaDict.setDate(Document.PDF_LAST_MODIFIED, now);
+        final COSDictionary privateDict = Document.getAndCreateDict(menyaDict,
+                Document.PDF_PRIVATE);
+
+        privateDict.clear();
+        for (int i = 0; i < menyaLayers.size(); i++) {
+            final String name = Document.getLayerName(i);
+            final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            final ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(menyaLayers.get(i));
+            oos.close();
+            privateDict.setItem(name, new COSString(bos.toByteArray()));
+        }
+    }
+
+    /**
+     * @param index
+     * @return
+     */
+    private static String getLayerName(final int index) {
+        return new StringBuilder(Document.PDF_LAYER_PREFIX).append(index)
+                .toString();
+    }
+
+    /**
+     * @param page
+     * @param menyaLayers
+     * @return
+     */
+    private PDFLayer findPDFLayer(final IPage page,
+            final List<Serializable> menyaLayers) {
+        PDFLayer pdfLayer = null;
+        for (final ILayer layer : page.getLayers()) {
+            if (layer instanceof PDFLayer) {
+                pdfLayer = (PDFLayer) layer;
+            } else if (layer instanceof Serializable) {
+                menyaLayers.add((Serializable) layer);
+            }
+        }
+        return pdfLayer;
     }
 
     private static COSDictionary getAndCreateDict(final COSDictionary parent,
@@ -208,7 +302,8 @@ public final class Document implements IDocument {
     }
 
     private static COSDictionary getPieceInfo(final PDPage page) {
-        return Document.getAndCreateDict(page.getCOSDictionary(), "PieceInfo");
+        return Document.getAndCreateDict(page.getCOSDictionary(),
+                Document.PDF_PIECE_INFO);
     }
 
 }
