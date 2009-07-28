@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import menya.core.model.GraphicalData;
-import menya.gui.GUI;
 
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -28,7 +27,8 @@ public class PDFLayer extends ALayer {
     /**
      * Logger for this class.
      */
-    private static final Logger LOGGER = Logger.getLogger(GUI.class.toString());
+    private static final Logger LOGGER = Logger.getLogger(PDFLayer.class
+            .toString());
 
     private final PageDrawer drawer;
     private final PDPage page;
