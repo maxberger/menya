@@ -17,14 +17,18 @@
  */
 package menya.core.model;
 
+import java.io.Serializable;
+
 /**
- * Repesents a single point.
+ * Represents a single point.
  * 
  * @author Max
  * @author Dominik
  * @version $Revision$
  */
-public class Point {
+public class Point implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final double x;
     private final double y;

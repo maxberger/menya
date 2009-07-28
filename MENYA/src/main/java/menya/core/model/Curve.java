@@ -19,6 +19,7 @@ package menya.core.model;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,9 @@ import menya.gui.PathShape;
  * @author Dominik
  * @version $Revision$
  */
-public class Curve implements GraphicalData {
+public class Curve implements GraphicalData, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final List<Point> path = new ArrayList<Point>();
 

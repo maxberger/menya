@@ -20,6 +20,7 @@
 
 package menya.core.document.layers;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,11 +33,13 @@ import menya.core.model.GraphicalData;
  * @author Max
  * @version $Revision$
  */
-public class CurveLayer extends ALayer {
+public class CurveLayer extends ALayer implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final List<Curve> curves = new ArrayList<Curve>();
 
-    private boolean hasChanged = true;
+    private transient boolean hasChanged;
 
     /**
      * Default constructor.
