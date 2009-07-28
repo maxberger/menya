@@ -22,6 +22,7 @@ package menya.gui;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.io.File;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -164,8 +165,11 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO: Use a better file chooser, use Webstart / OSX specific hooks.
         final JFileChooser chooser = new JFileChooser();
         chooser.showOpenDialog(this);
-        final String filename = chooser.getSelectedFile().getAbsolutePath();
-        this.sketchPane1.load(filename);
+        final File file = chooser.getSelectedFile();
+        if (file != null) {
+            final String filename = file.getAbsolutePath();
+            this.sketchPane1.load(filename);
+        }
         this.validate();
     }// GEN-LAST:event_openDocument
 
