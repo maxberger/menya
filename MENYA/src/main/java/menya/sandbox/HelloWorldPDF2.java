@@ -4,10 +4,13 @@ package menya.sandbox;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -44,6 +47,8 @@ public class HelloWorldPDF2 {
             final COSDictionary privateDict = this.getAndCreateDict(menyadict,
                     "Private");
             privateDict.setString("Test", "123");
+            final byte[] b = { 0, 1, 2, 3 };
+            privateDict.setItem("Buff", new COSString(b));
 
             final org.apache.pdfbox.pdmodel.font.PDFont font = PDType1Font.HELVETICA_BOLD;
             final PDPageContentStream contentStream = new PDPageContentStream(
@@ -85,6 +90,10 @@ public class HelloWorldPDF2 {
                     "Private");
             System.out.println("MenyaPrivTest: "
                     + privateDict.getString("Test"));
+            final COSBase buf = privateDict.getDictionaryObject("Buff");
+            final COSString buf2 = (COSString) buf;
+            final byte[] b = buf2.getBytes();
+            System.out.println("Bytes: " + Arrays.toString(b));
 
         } catch (final IOException e) {
             e.printStackTrace();

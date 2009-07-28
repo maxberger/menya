@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 import menya.core.document.IDocument;
@@ -23,6 +25,12 @@ public class PagePanel extends JPanel {
      * 
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOGGER = Logger.getLogger(PagePanel.class
+            .toString());
 
     private IDocument currentDocument;
 
@@ -67,6 +75,22 @@ public class PagePanel extends JPanel {
             this.currentDocument = Document.emptyDocument();
         }
         this.reload();
+    }
+
+    /**
+     * Saves a file from this panel.
+     *
+     * @param filename
+     *            the File to save as.
+     */
+    public void save(final String filename) {
+        if (this.currentDocument != null) {
+            try {
+                this.currentDocument.toPDF(filename);
+            } catch (final IOException e) {
+                LOGGER.log(Level.WARNING, "Error saving file", e);
+            }
+        }
     }
 
     /** {@inheritDoc} */

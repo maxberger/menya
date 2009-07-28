@@ -1,8 +1,12 @@
 package menya.core.model;
 
 import java.awt.Dimension;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
@@ -13,6 +17,9 @@ import menya.core.document.ILayer;
 import menya.core.document.IPage;
 import menya.core.document.layers.PDFLayer;
 
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -25,6 +32,11 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  * @version $Revision$
  */
 public final class Document implements IDocument {
+
+    /**
+     * 
+     */
+    private static final String PDF_LAST_MODIFIED = "LastModified";
 
     /**
      * Rotated left (or right?).
@@ -135,4 +147,68 @@ public final class Document implements IDocument {
             }
         }
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public void toPDF(final String filename) throws IOException {
+        if (this.pdfDocument == null) {
+            throw new IOException("Document is not based on a PDF");
+        }
+        try {
+            final Calendar now = Calendar.getInstance();
+            for (final IPage page : this.pages) {
+                PDFLayer pdfLayer = null;
+                final List<Serializable> menyaLayers = new ArrayList<Serializable>();
+                for (final ILayer layer : page.getLayers()) {
+                    if (layer instanceof PDFLayer) {
+                        pdfLayer = (PDFLayer) layer;
+                    } else if (layer instanceof Serializable) {
+                        menyaLayers.add((Serializable) layer);
+                    }
+                }
+                if (pdfLayer == null) {
+                    throw new IOException(
+                            "Failed to find PDF Layer in all pages");
+                }
+                final PDPage pdpage = pdfLayer.getPage();
+                final COSDictionary pieceInfo = Document.getPieceInfo(pdpage);
+                final COSDictionary menyaDict = Document.getAndCreateDict(
+                        pieceInfo, "Menya");
+                pdpage.getCOSDictionary().setDate(Document.PDF_LAST_MODIFIED,
+                        now);
+                menyaDict.setDate(Document.PDF_LAST_MODIFIED, now);
+                final COSDictionary privateDict = Document.getAndCreateDict(
+                        menyaDict, "Private");
+
+                privateDict.clear();
+                for (int i = 0; i < menyaLayers.size(); i++) {
+                    final String name = new StringBuilder("Layer").append(i)
+                            .toString();
+                    final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    final ObjectOutputStream oos = new ObjectOutputStream(bos);
+                    oos.writeObject(menyaLayers.get(i));
+                    oos.close();
+                    privateDict.setItem(name, new COSString(bos.toByteArray()));
+                }
+            }
+            this.pdfDocument.save(filename);
+        } catch (final COSVisitorException e) {
+            throw new IOException("Failure during save as PDF", e);
+        }
+    }
+
+    private static COSDictionary getAndCreateDict(final COSDictionary parent,
+            final String name) {
+        COSDictionary dict = (COSDictionary) parent.getDictionaryObject(name);
+        if (dict == null) {
+            dict = new COSDictionary();
+            parent.setItem(name, dict);
+        }
+        return dict;
+    }
+
+    private static COSDictionary getPieceInfo(final PDPage page) {
+        return Document.getAndCreateDict(page.getCOSDictionary(), "PieceInfo");
+    }
+
 }

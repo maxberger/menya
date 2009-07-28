@@ -84,4 +84,13 @@ public class PDFLayer extends ALayer {
         return false;
     }
 
+    /**
+     * Getter for PDF page object.
+     * 
+     * @return the page.
+     */
+    public PDPage getPage() {
+        return this.page;
+    }
+
 }

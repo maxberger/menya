@@ -24,6 +24,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  * The main frame of Menya.
@@ -51,12 +52,15 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed"
     // <editor-fold defaultstate="collapsed"
     // <editor-fold defaultstate="collapsed"
+    // <editor-fold defaultstate="collapsed"
     // desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         this.jToolBar1 = new javax.swing.JToolBar();
         this.buttonFullscreen = new javax.swing.JButton();
+        this.jSeparator1 = new javax.swing.JToolBar.Separator();
         this.buttonOpen = new javax.swing.JButton();
+        this.buttonSaveAs = new javax.swing.JButton();
         this.jScrollPane1 = new javax.swing.JScrollPane();
         this.sketchPane1 = new menya.gui.PagePanel();
 
@@ -85,6 +89,7 @@ public class MainFrame extends javax.swing.JFrame {
                     }
                 });
         this.jToolBar1.add(this.buttonFullscreen);
+        this.jToolBar1.add(this.jSeparator1);
 
         this.buttonOpen.setIcon(new javax.swing.ImageIcon(this.getClass()
                 .getResource("/document-open.png"))); // NOI18N
@@ -102,6 +107,25 @@ public class MainFrame extends javax.swing.JFrame {
         });
         this.jToolBar1.add(this.buttonOpen);
 
+        this.buttonSaveAs.setIcon(new javax.swing.ImageIcon(this.getClass()
+                .getResource("/document-save-as.png"))); // NOI18N
+        this.buttonSaveAs.setText("Save As");
+        this.buttonSaveAs
+                .setToolTipText("Save current Document as a new Document");
+        this.buttonSaveAs.setFocusable(false);
+        this.buttonSaveAs
+                .setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        this.buttonSaveAs
+                .setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        this.buttonSaveAs
+                .addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(
+                            final java.awt.event.ActionEvent evt) {
+                        MainFrame.this.documentSaveAs(evt);
+                    }
+                });
+        this.jToolBar1.add(this.buttonSaveAs);
+
         this.getContentPane().add(this.jToolBar1, java.awt.BorderLayout.NORTH);
 
         final javax.swing.GroupLayout sketchPane1Layout = new javax.swing.GroupLayout(
@@ -112,7 +136,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(0, 595, Short.MAX_VALUE));
         sketchPane1Layout.setVerticalGroup(sketchPane1Layout
                 .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGap(0, 1682, Short.MAX_VALUE));
+                .addGap(0, 841, Short.MAX_VALUE));
 
         this.jScrollPane1.setViewportView(this.sketchPane1);
 
@@ -121,6 +145,20 @@ public class MainFrame extends javax.swing.JFrame {
 
         this.pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void documentSaveAs(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_documentSaveAs
+        // TODO: Use a better file chooser, use Webstart / OSX specific hooks.
+        JOptionPane
+                .showMessageDialog(
+                        this,
+                        "Warning! Saving is yet incomplete and may destroy your PDF file. Use at your own Risk!",
+                        "Saving is Alpha!", JOptionPane.WARNING_MESSAGE);
+        final JFileChooser chooser = new JFileChooser();
+        if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            final String filename = chooser.getSelectedFile().getAbsolutePath();
+            this.sketchPane1.save(filename);
+        }
+    }// GEN-LAST:event_documentSaveAs
 
     private void openDocument(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_openDocument
         // TODO: Use a better file chooser, use Webstart / OSX specific hooks.
@@ -149,7 +187,9 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonFullscreen;
     private javax.swing.JButton buttonOpen;
+    private javax.swing.JButton buttonSaveAs;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar jToolBar1;
     private menya.gui.PagePanel sketchPane1;
     // End of variables declaration//GEN-END:variables
