@@ -288,7 +288,7 @@ public final class Document implements IDocument {
                             "Failed to find PDF Layer in all pages");
                 }
                 Document.storeMenyaLayers(now, menyaLayers, pdfLayer,
-                        this.pdfDocument);
+                        this.pdfDocument, page);
             }
             this.pdfDocument.save(filename);
         } catch (final COSVisitorException e) {
@@ -304,9 +304,9 @@ public final class Document implements IDocument {
      */
     private static void storeMenyaLayers(final Calendar now,
             final List<ILayer> menyaLayers, final PDFLayer pdfLayer,
-            final PDDocument pddoc) throws IOException {
+            final PDDocument pddoc, final IPage page) throws IOException {
         final PDPage pdpage = pdfLayer.getPage();
-        Document.storeGraphicalMenyaData(menyaLayers, pdpage, pddoc);
+        Document.storeGraphicalMenyaData(menyaLayers, pdpage, pddoc, page);
         Document.storeSerializedMenyaData(now, menyaLayers, pdpage);
     }
 
@@ -316,7 +316,8 @@ public final class Document implements IDocument {
      * @throws IOException
      */
     private static void storeGraphicalMenyaData(final List<ILayer> menyaLayers,
-            final PDPage pdpage, final PDDocument pddoc) throws IOException {
+            final PDPage pdpage, final PDDocument pddoc, final IPage page)
+            throws IOException {
         final COSDictionary ocg = Document.createMenyaPDFLayers(pddoc);
 
         final COSDictionary properties = Document.getAndCreateDict(pdpage
@@ -327,7 +328,10 @@ public final class Document implements IDocument {
                 pddoc, pdpage, true, true);
         contentStream.appendRawCommands("/OC /MC0 BDC ");
 
-        // TODO: Add content here.
+        // TODO: One layer for each menya layer.
+        for (final ILayer layer : menyaLayers) {
+            layer.toPdf(contentStream, page);
+        }
 
         contentStream.appendRawCommands(" EMC");
         contentStream.close();

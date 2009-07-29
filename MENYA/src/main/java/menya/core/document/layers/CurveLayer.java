@@ -20,12 +20,16 @@
 
 package menya.core.document.layers;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import menya.core.document.IPage;
 import menya.core.model.Curve;
 import menya.core.model.GraphicalData;
+
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
 /**
  * Represents a layer with curves drawn.
@@ -72,6 +76,15 @@ public class CurveLayer extends ALayer implements Serializable {
     @Override
     public boolean hasChanged() {
         return this.hasChanged;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void toPdf(final PDPageContentStream contentStream, final IPage page)
+            throws IOException {
+        for (final Curve curve : this.curves) {
+            curve.toPdf(contentStream, page);
+        }
     }
 
 }
