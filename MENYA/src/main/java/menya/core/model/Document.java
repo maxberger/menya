@@ -281,7 +281,7 @@ public final class Document implements IDocument {
         try {
             final Calendar now = Calendar.getInstance();
             for (final IPage page : this.pages) {
-                final List<Serializable> menyaLayers = new ArrayList<Serializable>();
+                final List<ILayer> menyaLayers = new ArrayList<ILayer>();
                 final PDFLayer pdfLayer = this.findPDFLayer(page, menyaLayers);
                 if (pdfLayer == null) {
                     throw new IOException(
@@ -303,7 +303,7 @@ public final class Document implements IDocument {
      * @throws IOException
      */
     private static void storeMenyaLayers(final Calendar now,
-            final List<Serializable> menyaLayers, final PDFLayer pdfLayer,
+            final List<ILayer> menyaLayers, final PDFLayer pdfLayer,
             final PDDocument pddoc) throws IOException {
         final PDPage pdpage = pdfLayer.getPage();
         Document.storeGraphicalMenyaData(menyaLayers, pdpage, pddoc);
@@ -315,9 +315,8 @@ public final class Document implements IDocument {
      * @param pdpage
      * @throws IOException
      */
-    private static void storeGraphicalMenyaData(
-            final List<Serializable> menyaLayers, final PDPage pdpage,
-            final PDDocument pddoc) throws IOException {
+    private static void storeGraphicalMenyaData(final List<ILayer> menyaLayers,
+            final PDPage pdpage, final PDDocument pddoc) throws IOException {
         final COSDictionary ocg = Document.createMenyaPDFLayers(pddoc);
 
         final COSDictionary properties = Document.getAndCreateDict(pdpage
@@ -366,7 +365,7 @@ public final class Document implements IDocument {
      * @throws IOException
      */
     private static void storeSerializedMenyaData(final Calendar now,
-            final List<Serializable> menyaLayers, final PDPage pdpage)
+            final List<ILayer> menyaLayers, final PDPage pdpage)
             throws IOException {
         final COSDictionary pieceInfo = Document.getPieceInfo(pdpage);
         final COSDictionary menyaDict = Document.getAndCreateDict(pieceInfo,
@@ -400,15 +399,18 @@ public final class Document implements IDocument {
      * @param page
      * @param menyaLayers
      * @return
+     * @throws IOException
      */
     private PDFLayer findPDFLayer(final IPage page,
-            final List<Serializable> menyaLayers) {
+            final List<ILayer> menyaLayers) throws IOException {
         PDFLayer pdfLayer = null;
         for (final ILayer layer : page.getLayers()) {
             if (layer instanceof PDFLayer) {
                 pdfLayer = (PDFLayer) layer;
             } else if (layer instanceof Serializable) {
-                menyaLayers.add((Serializable) layer);
+                menyaLayers.add(layer);
+            } else {
+                throw new IOException("Not all layers are Serializable");
             }
         }
         return pdfLayer;
