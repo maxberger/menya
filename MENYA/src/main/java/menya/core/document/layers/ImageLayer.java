@@ -27,8 +27,11 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import menya.core.document.IPage;
 import menya.core.model.GraphicalData;
 import menya.core.model.ImageData;
+
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
 /**
  * Represents an image layer.
@@ -70,6 +73,13 @@ public class ImageLayer extends ALayer {
     @Override
     public boolean hasChanged() {
         return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void toPdf(final PDPageContentStream contentStream, final IPage page)
+            throws IOException {
+        throw new IOException("Unsupported Operation: toPDF on ImageLayer");
     }
 
 }

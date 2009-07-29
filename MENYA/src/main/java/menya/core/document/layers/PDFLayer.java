@@ -11,10 +11,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import menya.core.document.IPage;
 import menya.core.model.GraphicalData;
 
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
 /**
  * A layer based on a PDF document.
@@ -91,6 +93,13 @@ public class PDFLayer extends ALayer {
      */
     public PDPage getPage() {
         return this.page;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void toPdf(final PDPageContentStream contentStream, final IPage page)
+            throws IOException {
+        throw new IOException("Unsupported Operation: toPDF on PDFLayer");
     }
 
 }

@@ -20,7 +20,11 @@
 
 package menya.core.document;
 
+import java.io.IOException;
+
 import menya.core.model.GraphicalData;
+
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
 /**
  * This interface represents a common background for a document. A layer
@@ -49,4 +53,17 @@ public interface ILayer {
      * @return false only if the data has not changed.
      */
     boolean hasChanged();
+
+    /**
+     * Serialize this layer to the given PDF content stream.
+     * 
+     * @param contentStream
+     *            PDF Content stream.
+     * @param page
+     *            the current page this layer originate of.
+     * @throws IOException
+     *             if the layer cannot be written to the content stream.
+     */
+    void toPdf(PDPageContentStream contentStream, IPage page)
+            throws IOException;
 }
