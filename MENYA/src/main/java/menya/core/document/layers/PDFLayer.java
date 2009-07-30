@@ -97,7 +97,7 @@ public class PDFLayer extends ALayer {
 
     /** {@inheritDoc} */
     @Override
-    public void toPdf(final PDPageContentStream contentStream, final IPage page)
+    public void toPdf(final PDPageContentStream contentStream, final IPage ipage)
             throws IOException {
         throw new IOException("Unsupported Operation: toPDF on PDFLayer");
     }
