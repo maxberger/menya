@@ -1,6 +1,7 @@
 package menya.core.model;
 
 import java.awt.Dimension;
+import java.awt.geom.Dimension2D;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,6 +33,7 @@ import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
@@ -90,15 +92,21 @@ public final class Document implements IDocument {
 
     private final PDDocument pdfDocument;
 
+    private final PageDrawer pageDrawer;
+
     /**
      * Default Constructor.
      * 
      * @param underlayingDocument
      *            Document this document is based on.
+     * @param pgDrawer
+     *            a PageDrawer object.
      */
-    private Document(final PDDocument underlayingDocument) {
+    private Document(final PDDocument underlayingDocument,
+            final PageDrawer pgDrawer) {
         this.pages = new ArrayList<IPage>();
         this.pdfDocument = underlayingDocument;
+        this.pageDrawer = pgDrawer;
     }
 
     /** {@inheritDoc} */
@@ -113,16 +121,37 @@ public final class Document implements IDocument {
      */
     public static Document emptyDocument() {
         PDDocument pddoc;
+        PageDrawer pgDrawer;
         try {
             pddoc = new PDDocument();
+            pgDrawer = new PageDrawer();
         } catch (final IOException io) {
             Document.LOGGER.log(Level.WARNING,
                     "Failed to base Document on PDF", io);
             pddoc = null;
+            pgDrawer = null;
         }
-        final Document d = new Document(pddoc);
-        d.pages.add(new Page());
+        final Document d = new Document(pddoc, pgDrawer);
+        d.addEmptyPage();
         return d;
+    }
+
+    /**
+     * Add an empty page to the document.
+     */
+    private void addEmptyPage() {
+        final Page p = new Page();
+        if (this.pdfDocument != null) {
+            final Dimension2D pgDimension = p.getPageSize();
+            final Dimension pageDimension = new Dimension((int) pgDimension
+                    .getWidth(), (int) pgDimension.getHeight());
+            final PDPage pdPage = new PDPage();
+            this.pdfDocument.addPage(pdPage);
+            final ILayer pdfLayer = new PDFLayer(this.pageDrawer, pdPage,
+                    pageDimension);
+            p.addLayer(pdfLayer);
+        }
+        this.pages.add(p);
     }
 
     /**
@@ -137,7 +166,7 @@ public final class Document implements IDocument {
     public static Document fromPDF(final String filename) throws IOException {
         final PDDocument pddoc = PDDocument.load(filename);
         final PageDrawer drawer = new PageDrawer();
-        final Document d = new Document(pddoc);
+        final Document d = new Document(pddoc, drawer);
 
         final List<?> pages = pddoc.getDocumentCatalog().getAllPages();
 
@@ -319,13 +348,19 @@ public final class Document implements IDocument {
             final PDPage pdpage, final PDDocument pddoc, final IPage page)
             throws IOException {
         final COSDictionary ocg = Document.createMenyaPDFLayers(pddoc);
-
+        if (pdpage.getResources() == null) {
+            pdpage.setResources(new PDResources());
+        }
         final COSDictionary properties = Document.getAndCreateDict(pdpage
                 .getResources().getCOSDictionary(), "Properties");
         properties.setItem("MC0", ocg);
 
-        final PDPageContentStream contentStream = new PDPageContentStream(
-                pddoc, pdpage, true, true);
+        final PDPageContentStream contentStream;
+        if (pdpage.getContents() == null) {
+            contentStream = new PDPageContentStream(pddoc, pdpage, false, true);
+        } else {
+            contentStream = new PDPageContentStream(pddoc, pdpage, true, true);
+        }
         contentStream.appendRawCommands("/OC /MC0 BDC ");
 
         // TODO: One layer for each menya layer.
