@@ -1,0 +1,10 @@
+Syntax: regexp
+
+^PDFBox.log
+^\.project$
+^\.settings
+^target/
+^\.classpath$
+^\.checkstyle$
+^nbactions.xml$
+
