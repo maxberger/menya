@@ -23,7 +23,8 @@ package menya.core.model;
  * @param <T>
  *            the generic type value that this property holds
  */
-public interface IWorkingToolProperty<T> {
+public interface IWorkingToolProperty<T> extends
+		Comparable<IWorkingToolProperty<?>> {
 
 	/**
 	 * retrieves the name of this property. Please note that each pen can hold

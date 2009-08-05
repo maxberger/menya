@@ -17,7 +17,6 @@ package menya.core.model.tools;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -33,20 +32,7 @@ public abstract class AWorkingTool implements IWorkingTool {
 
 	private Set<IProcessor> processors = new TreeSet<IProcessor>();
 
-	private Set<IWorkingToolProperty<?>> properties = new TreeSet<IWorkingToolProperty<?>>(
-			new Comparator<IWorkingToolProperty<?>>() {
-				/*
-				 * (non-Javadoc)
-				 * 
-				 * @see java.util.Comparator#compare(java.lang.Object,
-				 * java.lang.Object)
-				 */
-				@Override
-				public int compare(IWorkingToolProperty<?> o1,
-						IWorkingToolProperty<?> o2) {
-					return o1.getName().compareTo(o2.getName());
-				}
-			});
+	private Set<IWorkingToolProperty<?>> properties = new TreeSet<IWorkingToolProperty<?>>();
 
 	/**
 	 * you should setup this pens processors and properties by implementing this
@@ -111,6 +97,10 @@ public abstract class AWorkingTool implements IWorkingTool {
 	@Override
 	public final Set<IWorkingToolProperty<?>> getProperties() {
 		return Collections.unmodifiableSet(properties);
+	}
+
+	public final boolean hasProperty(IWorkingToolProperty<?> p) {
+		return properties.contains(p);
 	}
 
 }
