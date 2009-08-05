@@ -15,21 +15,10 @@
  */
 package menya.core.model.properties;
 
-import java.awt.Color;
-
 /**
  * @author dominik
  * 
  */
-public class ColorProperty extends AProperty<Color> {
-
-	/**
-	 * @param name
-	 * @param color
-	 */
-	public ColorProperty(String name, Color color) {
-		setName(name);
-		setValue(color);
-	}
-
+public class PropertyConstants {
+	public static final String DEFAULT_COLOR = "DEFAULT_COLOR";
 }

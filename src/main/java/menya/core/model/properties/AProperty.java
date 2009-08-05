@@ -27,11 +27,11 @@ public abstract class AProperty<T> implements IWorkingToolProperty<T> {
 
 	private T value;
 
-	public void setName(String name) {
+	public final void setName(String name) {
 		this.name = name;
 	}
 
-	public void setValue(T value) {
+	public final void setValue(T value) {
 		this.value = value;
 	}
 
@@ -41,7 +41,7 @@ public abstract class AProperty<T> implements IWorkingToolProperty<T> {
 	 * @see menya.core.model.WorkingToolProperty#getName()
 	 */
 	@Override
-	public String getName() {
+	public final String getName() {
 		return name;
 	}
 
@@ -51,7 +51,17 @@ public abstract class AProperty<T> implements IWorkingToolProperty<T> {
 	 * @see menya.core.model.WorkingToolProperty#getValue()
 	 */
 	@Override
-	public T getValue() {
+	public final T getValue() {
 		return value;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public final int compareTo(IWorkingToolProperty<?> o) {
+		return getName().compareTo(o.getName());
 	}
 }
