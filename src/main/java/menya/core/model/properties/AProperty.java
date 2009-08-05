@@ -64,4 +64,27 @@ public abstract class AProperty<T> implements IWorkingToolProperty<T> {
 	public final int compareTo(IWorkingToolProperty<?> o) {
 		return getName().compareTo(o.getName());
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof IWorkingToolProperty) {
+			return ((IWorkingToolProperty<?>) obj).compareTo(this) == 0;
+		}
+		return super.equals(obj);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return getName().hashCode();
+	}
 }
