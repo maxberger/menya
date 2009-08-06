@@ -177,7 +177,7 @@ public class SketchPane extends JComponent {
             return;
         }
         this.currentCurve.add(p);
-        // TODO: Smooth Path
+        this.currentCurve.smoothPath();
         this.activeLayer.addCurve(this.currentCurve);
         this.currentCurve = null;
         // TODO: Maybe erase path that was drawn during drag.
