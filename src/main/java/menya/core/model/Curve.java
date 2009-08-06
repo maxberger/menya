@@ -53,6 +53,8 @@ public class Curve implements GraphicalData, Serializable {
 
     private static final int THREE_DATA_POINTS = 6;
 
+    private static final float DISTANCE_THRESHOLD = 3.5f;
+
     private final List<Point> path = new ArrayList<Point>();
 
     /**
@@ -152,5 +154,28 @@ public class Curve implements GraphicalData, Serializable {
             bos.write(COSWriter.SPACE);
         }
         return bos.toByteArray();
+    }
+
+    /**
+     * This method reduces the number of points in the curve.
+     * <p>
+     * TODO: extract functionality and provide external <a
+     * href="http://en.wikipedia.org/wiki/Smooth_Operator">smooth-operators</a>.
+     * <p>
+     * TODO: This is a very basic smoothing algorithm.
+     */
+    public void smoothPath() {
+        Point prev = this.path.get(0);
+        // Never smooth first or last point!
+        for (int i = 1; i < this.path.size() - 1; i++) {
+            Point cur = this.path.get(i);
+            while (cur.distanceTo(prev) < Curve.DISTANCE_THRESHOLD
+                    && i < this.path.size() - 1) {
+                this.path.remove(i);
+                cur = this.path.get(i);
+                System.out.println("Removing " + i);
+            }
+            prev = cur;
+        }
     }
 }
