@@ -24,6 +24,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
@@ -50,174 +51,203 @@ import menya.core.model.Point;
  */
 public class SketchPane extends JComponent {
 
-    /**
+	/**
+	 * Logger for this class.
+	 */
+	private static final Logger LOGGER = Logger.getLogger(SketchPane.class
+			.toString());
+
+	/**
      * 
      */
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private static final float MAX_PEN_WIDTH = 5.0f;
+	private static final float DEFAULT_PRESSURE = 0.5f;
 
-    private static final float DEFAULT_PRESSURE = 0.5f;
+	private final IPage currentPage;
 
-    private final IPage currentPage;
+	private final CurveLayer activeLayer;
 
-    private final CurveLayer activeLayer;
+	private Curve currentCurve;
 
-    private Curve currentCurve;
+	private BufferedImage cachedImage;
 
-    private BufferedImage cachedImage;
+	/**
+	 * Default constructor.
+	 * 
+	 * @param page
+	 *            the Page to display in this pane.
+	 */
+	public SketchPane(final IPage page) {
+		this.currentPage = page;
+		this.activeLayer = page.getActiveLayer();
+		// this.addMouseListener(this);
+		// this.addMouseMotionListener(this);
 
-    /**
-     * Default constructor.
-     * 
-     * @param page
-     *            the Page to display in this pane.
-     */
-    public SketchPane(final IPage page) {
-        this.currentPage = page;
-        this.activeLayer = page.getActiveLayer();
-        // this.addMouseListener(this);
-        // this.addMouseMotionListener(this);
+		final PenManager penManager = new PenManager(this);
+		penManager.pen.addListener(new PenAdapter() {
+			@Override
+			public void penLevelEvent(final PLevelEvent ev) {
+				SketchPane.this.penLevelEvent(ev);
+			}
 
-        final PenManager penManager = new PenManager(this);
-        penManager.pen.addListener(new PenAdapter() {
-            @Override
-            public void penLevelEvent(final PLevelEvent ev) {
-                SketchPane.this.penLevelEvent(ev);
-            }
+			@Override
+			public void penButtonEvent(final PButtonEvent ev) {
+				SketchPane.this.penButtonEvent(ev);
+			}
+		});
+		this.setSize(this.getPreferredSize());
+	}
 
-            @Override
-            public void penButtonEvent(final PButtonEvent ev) {
-                SketchPane.this.penButtonEvent(ev);
-            }
-        });
-        this.setSize(this.getPreferredSize());
-    }
+	/** {@inheritDoc} */
+	@Override
+	protected void paintComponent(final Graphics g) {
+		super.paintComponent(g);
 
-    /** {@inheritDoc} */
-    @Override
-    protected void paintComponent(final Graphics g) {
-        super.paintComponent(g);
+		for (final ILayer l : this.currentPage.getLayers()) {
+			if (l.hasChanged()) {
+				this.cachedImage = null;
+			}
+		}
+		if (this.cachedImage == null) {
+			final Dimension2D pageSize = this.currentPage.getPageSize();
+			final BufferedImage img = new BufferedImage((int) Math
+					.ceil(pageSize.getWidth()), (int) Math.ceil(pageSize
+					.getHeight()), BufferedImage.TYPE_INT_RGB);
 
-        for (final ILayer l : this.currentPage.getLayers()) {
-            if (l.hasChanged()) {
-                this.cachedImage = null;
-            }
-        }
-        if (this.cachedImage == null) {
-            final Dimension2D pageSize = this.currentPage.getPageSize();
-            final BufferedImage img = new BufferedImage((int) Math
-                    .ceil(pageSize.getWidth()), (int) Math.ceil(pageSize
-                    .getHeight()), BufferedImage.TYPE_INT_RGB);
+			final Graphics2D g2dImage = img.createGraphics();
+			g2dImage.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_ON);
+			g2dImage.setColor(Color.WHITE);
+			g2dImage.fill(new Rectangle2D.Double(0, 0, pageSize.getWidth(),
+					pageSize.getHeight()));
 
-            final Graphics2D g2dImage = img.createGraphics();
-            g2dImage.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
-            g2dImage.setColor(Color.WHITE);
-            g2dImage.fill(new Rectangle2D.Double(0, 0, pageSize.getWidth(),
-                    pageSize.getHeight()));
+			for (final ILayer l : this.currentPage.getLayers()) {
+				for (final GraphicalData gd : l.getGraphicalData()) {
+					gd.draw(g2dImage);
+				}
+			}
+			this.cachedImage = img;
+		}
 
-            for (final ILayer l : this.currentPage.getLayers()) {
-                for (final GraphicalData gd : l.getGraphicalData()) {
-                    gd.draw(g2dImage);
-                }
-            }
-            this.cachedImage = img;
-        }
+		final Graphics2D g2dReal = (Graphics2D) g;
+		g2dReal.drawImage(this.cachedImage, null, 0, 0);
+		g2dReal.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
 
-        final Graphics2D g2dReal = (Graphics2D) g;
-        g2dReal.drawImage(this.cachedImage, null, 0, 0);
-        g2dReal.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
+		if (this.currentCurve != null) {
+			this.currentCurve.draw(g2dReal);
+		}
+	}
 
-        if (this.currentCurve != null) {
-            this.currentCurve.draw(g2dReal);
-        }
-    }
+	private Dimension dim2DtoDim(final Dimension2D d2d) {
+		return new Dimension((int) Math.ceil(d2d.getWidth()), (int) Math
+				.ceil(d2d.getHeight()));
+	}
 
-    private Dimension dim2DtoDim(final Dimension2D d2d) {
-        return new Dimension((int) Math.ceil(d2d.getWidth()), (int) Math
-                .ceil(d2d.getHeight()));
-    }
+	/** {@inheritDoc} */
+	@Override
+	public Dimension getMinimumSize() {
+		return this.getPreferredSize();
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public Dimension getMinimumSize() {
-        return this.getPreferredSize();
-    }
+	/** {@inheritDoc} */
+	@Override
+	public Dimension getMaximumSize() {
+		return this.getPreferredSize();
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public Dimension getMaximumSize() {
-        return this.getPreferredSize();
-    }
+	/** {@inheritDoc} */
+	@Override
+	public Dimension getPreferredSize() {
+		return this.dim2DtoDim(this.currentPage.getPageSize());
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public Dimension getPreferredSize() {
-        return this.dim2DtoDim(this.currentPage.getPageSize());
-    }
+	/** {@inheritDoc} */
+	public void penButtonEvent(final PButtonEvent ev) {
+		if (currentPage.getActiveLayer().isEditable()) {
+			final PButton button = ev.button;
+			if (PButton.Type.LEFT.equals(button.getType())) {
+				final Point p = this.toPoint(ev.pen);
 
-    /** {@inheritDoc} */
-    public void penButtonEvent(final PButtonEvent ev) {
-        final PButton button = ev.button;
-        if (PButton.Type.LEFT.equals(button.getType())) {
-            final Point p = this.toPoint(ev.pen);
+				if (button.value) {
+					this.startCurve(p);
+				} else {
+					this.stopCurve(p);
+				}
+			}
+		} else {
+			// do nothing
+			LOGGER.finer("This layer (" + currentPage.getActiveLayer()
+					+ ") is not editable.");
+		}
+	}
 
-            if (button.value) {
-                this.startCurve(p);
-            } else {
-                this.stopCurve(p);
-            }
-        }
-    }
+	private void stopCurve(final Point p) {
+		if (this.currentCurve == null) {
+			return;
+		}
+		this.currentCurve.add(p);
+		// TODO: Smooth Path
+		this.activeLayer.addCurve(this.currentCurve);
+		this.currentCurve = null;
+		// TODO: Maybe erase path that was drawn during drag.
+		this.repaint();
+	}
 
-    private void stopCurve(final Point p) {
-        if (this.currentCurve == null) {
-            return;
-        }
-        this.currentCurve.add(p);
-        this.currentCurve.smoothPath();
-        this.activeLayer.addCurve(this.currentCurve);
-        this.currentCurve = null;
-        // TODO: Maybe erase path that was drawn during drag.
-        this.repaint();
-    }
+	private void startCurve(final Point p) {
+		this.currentCurve = new Curve();
+		this.currentCurve.add(p);
+	}
 
-    private void startCurve(final Point p) {
-        this.currentCurve = new Curve();
-        this.currentCurve.add(p);
-    }
+	private Point toPoint(final Pen pen) {
+		if (currentPage.getActiveLayer().isEditable()) {
+			final float posx = pen.getLevelValue(Type.X);
+			final float posy = pen.getLevelValue(Type.Y);
+			final float pressure;
+			if (PKind.Type.STYLUS.equals(pen.getKind().getType())) {
+				pressure = currentPage.getActivePen().applyPressureFunction(
+						pen.getLevelValue(Type.PRESSURE));
+			} else {
+				pressure = currentPage.getActivePen().applyPressureFunction(
+						SketchPane.DEFAULT_PRESSURE);
+			}
+			// TODO: Improve!
+			return new Point(posx, posy, pressure
+					* currentPage.getActivePen().getMaxWidth());
+		} else {
+			// XXX possible source for a nullpointerexception
+			LOGGER
+					.warning("This layer ("
+							+ currentPage.getActiveLayer()
+							+ ") is not editable. This case should be catched before as at this point I can only return null (possible nullpointer exception source).");
+			return null;
+		}
+	}
 
-    private Point toPoint(final Pen pen) {
-        final float posx = pen.getLevelValue(Type.X);
-        final float posy = pen.getLevelValue(Type.Y);
-        final float pressure;
-        if (PKind.Type.STYLUS.equals(pen.getKind().getType())) {
-            pressure = pen.getLevelValue(Type.PRESSURE);
-        } else {
-            pressure = SketchPane.DEFAULT_PRESSURE;
-        }
-        // TODO: Improve!
-        return new Point(posx, posy, pressure * SketchPane.MAX_PEN_WIDTH);
-    }
+	/** {@inheritDoc} */
+	public void penLevelEvent(final PLevelEvent ev) {
+		if (currentPage.getActiveLayer().isEditable()) {
+			if (this.currentCurve == null) {
+				return;
+			}
+			final Point newP = this.toPoint(ev.pen);
+			// final Point old = this.currentPath.get(this.currentPath.size() -
+			// 1);
+			// if (newP.distanceTo(old) > 10.0) {
+			this.currentCurve.add(newP);
+			// }
+		} else {
+			// do nothing
+			LOGGER.finer("This layer (" + currentPage.getActiveLayer()
+					+ ") is not editable.");
+		}
+		this.repaint();
+	}
 
-    /** {@inheritDoc} */
-    public void penLevelEvent(final PLevelEvent ev) {
-        if (this.currentCurve == null) {
-            return;
-        }
-        final Point newP = this.toPoint(ev.pen);
-        // final Point old = this.currentPath.get(this.currentPath.size() - 1);
-        // if (newP.distanceTo(old) > 10.0) {
-        this.currentCurve.add(newP);
-        // }
-        this.repaint();
-    }
-
-    /** {@inheritDoc} */
-    public void mouseMoved(final MouseEvent arg0) {
-        // ignore this event.
-    }
+	/** {@inheritDoc} */
+	public void mouseMoved(final MouseEvent arg0) {
+		// ignore this event.
+	}
 
 }
