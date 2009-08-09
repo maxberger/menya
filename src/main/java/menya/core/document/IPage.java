@@ -20,8 +20,10 @@ package menya.core.document;
 
 import java.awt.geom.Dimension2D;
 import java.util.Deque;
+import java.util.List;
 
 import menya.core.document.layers.CurveLayer;
+import menya.core.model.IWorkingTool;
 
 /**
  * This interfaces represents a page in a MENYA Document.
@@ -32,32 +34,46 @@ import menya.core.document.layers.CurveLayer;
  */
 public interface IPage {
 
-    /**
-     * @return the size of the page in Point.
-     */
-    Dimension2D getPageSize();
+	/**
+	 * @return the size of the page in Point.
+	 */
+	Dimension2D getPageSize();
 
-    /**
-     * retrieves the background layer of this page. Basically would it be the
-     * lowest (=first) layer. Thus it is the same as if we would call
-     * getLayers().peekFirst().
-     * 
-     * @return the background of this document or null if no layers are present.
-     */
-    ILayer getBackground();
+	/**
+	 * retrieves the background layer of this page. Basically would it be the
+	 * lowest (=first) layer. Thus it is the same as if we would call
+	 * getLayers().peekFirst().
+	 * 
+	 * @return the background of this document or null if no layers are present.
+	 */
+	ILayer getBackground();
 
-    /**
-     * retrieves all layers of this document.
-     * 
-     * @return the document layers as stack
-     */
-    Deque<ILayer> getLayers(); 
+	/**
+	 * retrieves all layers of this document.
+	 * 
+	 * @return the document layers as stack
+	 */
+	Deque<ILayer> getLayers();
 
-    /**
-     * Retrieves an active curve layer. This method never returns null - if no
-     * curve layer is present, a new one must be created.
-     * 
-     * @return the active curve layer.
-     */
-    CurveLayer getActiveLayer();
+	/**
+	 * Retrieves an active curve layer. This method never returns null - if no
+	 * curve layer is present, a new one must be created.
+	 * 
+	 * @return the active curve layer.
+	 */
+	CurveLayer getActiveLayer();
+
+	/**
+	 * @return
+	 */
+	public IWorkingTool getDefaultPen();
+
+	public IWorkingTool getActivePen();
+
+	public void setActivePen(IWorkingTool pen) throws IllegalArgumentException;
+
+	/**
+	 * @return
+	 */
+	public List<IWorkingTool> getAllPens();
 }

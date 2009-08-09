@@ -18,7 +18,12 @@
 
 package menya.core.document.layers;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 import menya.core.document.ILayer;
+import menya.core.model.IWorkingTool;
 
 /**
  * is the abstract super class of all layers.
@@ -28,4 +33,72 @@ import menya.core.document.ILayer;
  */
 public abstract class ALayer implements ILayer {
 
+	private List<IWorkingTool> pens = new LinkedList<IWorkingTool>();
+	private IWorkingTool activePen;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final List<IWorkingTool> getAllPens() {
+		return Collections.unmodifiableList(pens);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final void addPen(IWorkingTool pen) {
+		pens.add(pen);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final void removePen(IWorkingTool pen) {
+		pens.remove(pen);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final boolean isEditable() {
+		return getAllPens().size() > 0;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IWorkingTool getDefaultPen() {
+		return getAllPens().get(0);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final IWorkingTool getActivePen() {
+		if (activePen != null) {
+			return activePen;
+		} else {
+			return getDefaultPen();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final void setActivePen(IWorkingTool pen)
+			throws IllegalArgumentException {
+		if (getAllPens().contains(pen)) {
+			activePen = pen;
+		} else {
+			throw new IllegalArgumentException("The specified pen " + pen
+					+ " is not part of this layer.");
+		}
+	}
 }

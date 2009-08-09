@@ -26,6 +26,7 @@ import java.util.List;
 import menya.core.document.IPage;
 import menya.core.model.Curve;
 import menya.core.model.GraphicalData;
+import menya.core.model.tools.StandardPen;
 
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
@@ -37,52 +38,52 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
  */
 public class CurveLayer extends ALayer implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private final List<Curve> curves = new ArrayList<Curve>();
+	private final List<Curve> curves = new ArrayList<Curve>();
 
-    private transient boolean hasChanged;
+	private transient boolean hasChanged;
 
-    /**
-     * Default constructor.
-     */
-    public CurveLayer() {
-        // empty on purpose.
-    }
+	/**
+	 * Default constructor.
+	 */
+	public CurveLayer() {
+		// this is a editable layer, hence add a pen
+		addPen(new StandardPen());
+	}
 
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    public Iterable<GraphicalData> getGraphicalData() {
-        final Iterable<Curve> i = this.curves;
-        final Iterable d = i;
-        this.hasChanged = false;
-        return d;
-    }
+	/** {@inheritDoc} */
+	@SuppressWarnings("unchecked")
+	public Iterable<GraphicalData> getGraphicalData() {
+		final Iterable<Curve> i = this.curves;
+		final Iterable d = i;
+		this.hasChanged = false;
+		return d;
+	}
 
-    /**
-     * Adds a new curve to the layer.
-     * 
-     * @param curve
-     *            the curve to add.
-     */
-    public void addCurve(final Curve curve) {
-        this.hasChanged = true;
-        this.curves.add(curve);
-    }
+	/**
+	 * Adds a new curve to the layer.
+	 * 
+	 * @param curve
+	 *            the curve to add.
+	 */
+	public void addCurve(final Curve curve) {
+		this.hasChanged = true;
+		this.curves.add(curve);
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean hasChanged() {
-        return this.hasChanged;
-    }
+	/** {@inheritDoc} */
+	@Override
+	public boolean hasChanged() {
+		return this.hasChanged;
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public void toPdf(final PDPageContentStream contentStream, final IPage page)
-            throws IOException {
-        for (final Curve curve : this.curves) {
-            curve.toPdf(contentStream, page);
-        }
-    }
-
+	/** {@inheritDoc} */
+	@Override
+	public void toPdf(final PDPageContentStream contentStream, final IPage page)
+			throws IOException {
+		for (final Curve curve : this.curves) {
+			curve.toPdf(contentStream, page);
+		}
+	}
 }

@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 
 import menya.core.document.IPage;
 import menya.core.model.GraphicalData;
+import menya.core.model.tools.StandardPen;
 
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -38,80 +39,83 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
  */
 public class PDFLayer extends ALayer {
 
-    /**
-     * Logger for this class.
-     */
-    private static final Logger LOGGER = Logger.getLogger(PDFLayer.class
-            .toString());
+	/**
+	 * Logger for this class.
+	 */
+	private static final Logger LOGGER = Logger.getLogger(PDFLayer.class
+			.toString());
 
-    private final PageDrawer drawer;
-    private final PDPage page;
-    private final Dimension dimension;
+	private final PageDrawer drawer;
+	private final PDPage page;
+	private final Dimension dimension;
 
-    /**
-     * Create a new PDF based layer.
-     * 
-     * @param pgdrawer
-     *            page drawer object
-     * @param pdpage
-     *            page object
-     * @param pageDimension
-     *            page dimensions
-     */
-    public PDFLayer(final PageDrawer pgdrawer, final PDPage pdpage,
-            final Dimension pageDimension) {
-        this.drawer = pgdrawer;
-        this.page = pdpage;
-        this.dimension = pageDimension;
-    }
+	/**
+	 * Create a new PDF based layer.
+	 * 
+	 * @param pgdrawer
+	 *            page drawer object
+	 * @param pdpage
+	 *            page object
+	 * @param pageDimension
+	 *            page dimensions
+	 */
+	public PDFLayer(final PageDrawer pgdrawer, final PDPage pdpage,
+			final Dimension pageDimension) {
+		this.drawer = pgdrawer;
+		this.page = pdpage;
+		this.dimension = pageDimension;
 
-    private class PDFGraphics implements GraphicalData {
+		// FIXME is this correct for all pdf layers?
+		addPen(new StandardPen());
+	}
 
-        protected PDFGraphics() {
-            // Empty on purpose.
-        }
+	private class PDFGraphics implements GraphicalData {
 
-        /** {@inheritDoc} */
-        @Override
-        public void draw(final Graphics2D g2d) {
-            try {
-                PDFLayer.this.drawer.drawPage(g2d, PDFLayer.this.page,
-                        PDFLayer.this.dimension);
-            } catch (final IOException io) {
-                PDFLayer.LOGGER.log(Level.WARNING, "Failed to render page", io);
-            }
-        }
-    }
+		protected PDFGraphics() {
+			// Empty on purpose.
+		}
 
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public Iterable<GraphicalData> getGraphicalData() {
-        final List l = Collections.singletonList(new PDFGraphics());
-        final List<GraphicalData> g = l;
-        return g;
-    }
+		/** {@inheritDoc} */
+		@Override
+		public void draw(final Graphics2D g2d) {
+			try {
+				PDFLayer.this.drawer.drawPage(g2d, PDFLayer.this.page,
+						PDFLayer.this.dimension);
+			} catch (final IOException io) {
+				PDFLayer.LOGGER.log(Level.WARNING, "Failed to render page", io);
+			}
+		}
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean hasChanged() {
-        return false;
-    }
+	/** {@inheritDoc} */
+	@SuppressWarnings("unchecked")
+	@Override
+	public Iterable<GraphicalData> getGraphicalData() {
+		final List l = Collections.singletonList(new PDFGraphics());
+		final List<GraphicalData> g = l;
+		return g;
+	}
 
-    /**
-     * Getter for PDF page object.
-     * 
-     * @return the page.
-     */
-    public PDPage getPage() {
-        return this.page;
-    }
+	/** {@inheritDoc} */
+	@Override
+	public boolean hasChanged() {
+		return false;
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public void toPdf(final PDPageContentStream contentStream, final IPage ipage)
-            throws IOException {
-        throw new IOException("Unsupported Operation: toPDF on PDFLayer");
-    }
+	/**
+	 * Getter for PDF page object.
+	 * 
+	 * @return the page.
+	 */
+	public PDPage getPage() {
+		return this.page;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public void toPdf(final PDPageContentStream contentStream, final IPage ipage)
+			throws IOException {
+		throw new IOException("Unsupported Operation: toPDF on PDFLayer");
+	}
 
 }

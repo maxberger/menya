@@ -19,6 +19,8 @@ import java.awt.Dimension;
 import java.awt.geom.Dimension2D;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 
 import menya.core.Constants;
 import menya.core.document.ILayer;
@@ -33,74 +35,114 @@ import menya.core.document.layers.CurveLayer;
  */
 public class Page implements IPage {
 
-    /**
+	/**
      * 
      */
-    private static final double A4_HEIGHT = 29.7;
+	private static final double A4_HEIGHT = 29.7;
 
-    /**
+	/**
      * 
      */
-    private static final double A4_WIDTH = 21.0;
+	private static final double A4_WIDTH = 21.0;
 
-    private final ArrayDeque<ILayer> layers;
+	private final ArrayDeque<ILayer> layers;
 
-    // 210 mm x 297 mm is A4
-    private Dimension2D size = new Dimension(
-            (int) (Page.A4_WIDTH * Constants.CM_TO_PT),
-            (int) (Page.A4_HEIGHT * Constants.CM_TO_PT));
+	// 210 mm x 297 mm is A4
+	private Dimension2D size = new Dimension(
+			(int) (Page.A4_WIDTH * Constants.CM_TO_PT),
+			(int) (Page.A4_HEIGHT * Constants.CM_TO_PT));
 
-    /**
-     * Default Constructor.
-     */
-    public Page() {
-        this.layers = new ArrayDeque<ILayer>();
-    }
+	/**
+	 * Default Constructor.
+	 */
+	public Page() {
+		this.layers = new ArrayDeque<ILayer>();
+	}
 
-    /** {@inheritDoc} */
-    public ILayer getBackground() {
-        return this.layers.peekFirst();
-    }
+	/** {@inheritDoc} */
+	public ILayer getBackground() {
+		return this.layers.peekFirst();
+	}
 
-    /** {@inheritDoc} */
-    public Deque<ILayer> getLayers() {
-        return this.layers.clone();
-    }
+	/** {@inheritDoc} */
+	public Deque<ILayer> getLayers() {
+		return this.layers.clone();
+	}
 
-    /** {@inheritDoc} */
-    public CurveLayer getActiveLayer() {
-        final ILayer top = this.layers.peekLast();
-        if (top instanceof CurveLayer) {
-            return (CurveLayer) top;
-        } else {
-            final CurveLayer c = new CurveLayer();
-            this.layers.add(c);
-            return c;
-        }
-    }
+	/** {@inheritDoc} */
+	public CurveLayer getActiveLayer() {
+		final ILayer top = this.layers.peekLast();
+		if (top instanceof CurveLayer) {
+			return (CurveLayer) top;
+		} else {
+			final CurveLayer c = new CurveLayer();
+			this.layers.add(c);
+			return c;
+		}
+	}
 
-    /** {@inheritDoc} */
-    public Dimension2D getPageSize() {
-        return this.size;
-    }
+	/** {@inheritDoc} */
+	public Dimension2D getPageSize() {
+		return this.size;
+	}
 
-    /**
-     * Setter for page size.
-     * 
-     * @param newSize
-     *            the new Page size.
-     */
-    public void setPageSize(final Dimension2D newSize) {
-        this.size = (Dimension2D) newSize.clone();
-    }
+	/**
+	 * Setter for page size.
+	 * 
+	 * @param newSize
+	 *            the new Page size.
+	 */
+	public void setPageSize(final Dimension2D newSize) {
+		this.size = (Dimension2D) newSize.clone();
+	}
 
-    /**
-     * Add a new layer on top of this page.
-     * 
-     * @param layer
-     *            the new layer.
-     */
-    public void addLayer(final ILayer layer) {
-        this.layers.add(layer);
-    }
+	/**
+	 * Add a new layer on top of this page.
+	 * 
+	 * @param layer
+	 *            the new layer.
+	 */
+	public void addLayer(final ILayer layer) {
+		this.layers.add(layer);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see menya.core.document.IPage#getAllPens()
+	 */
+	@Override
+	public final List<IWorkingTool> getAllPens() {
+		List<IWorkingTool> pens = new LinkedList<IWorkingTool>();
+		for (ILayer l : getLayers()) {
+			pens.addAll(l.getAllPens());
+		}
+		return pens;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see menya.core.document.IPage#getDefaultPen()
+	 */
+	@Override
+	public final IWorkingTool getDefaultPen() {
+		return getActiveLayer().getDefaultPen();
+	}
+
+	@Override
+	public final IWorkingTool getActivePen() {
+		return getActiveLayer().getActivePen();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * menya.core.document.IPage#setActivePen(menya.core.model.IWorkingTool)
+	 */
+	@Override
+	public void setActivePen(IWorkingTool pen) throws IllegalArgumentException {
+		getActiveLayer().setActivePen(pen);
+	}
 }

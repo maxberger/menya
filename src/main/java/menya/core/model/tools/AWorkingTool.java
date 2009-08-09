@@ -22,7 +22,6 @@ import java.util.TreeSet;
 
 import menya.core.model.IProcessor;
 import menya.core.model.IWorkingTool;
-import menya.core.model.IWorkingToolProperty;
 
 /**
  * @author dominik
@@ -32,13 +31,38 @@ public abstract class AWorkingTool implements IWorkingTool {
 
 	private Set<IProcessor> processors = new TreeSet<IProcessor>();
 
-	private Set<IWorkingToolProperty<?>> properties = new TreeSet<IWorkingToolProperty<?>>();
+	private float maxWidth;
+
+	/**
+	 * 
+	 */
+	public AWorkingTool() {
+		setupInternal();
+	}
 
 	/**
 	 * you should setup this pens processors and properties by implementing this
 	 * method.
 	 */
 	protected abstract void setup();
+
+	private void setupInternal() {
+		loadDefaultFields();
+		loadDefaultProperties();
+		setup();
+	}
+
+	/**
+	 * 
+	 */
+	private void loadDefaultFields() {
+		maxWidth = 5.0f;
+		// TODO add more fields
+	}
+
+	private void loadDefaultProperties() {
+		// TODO
+	}
 
 	/**
 	 * replaces all prior added processors with the provided processors.
@@ -59,26 +83,6 @@ public abstract class AWorkingTool implements IWorkingTool {
 		this.processors.add(p);
 	}
 
-	/**
-	 * replaces all prior added properties with the provided properties.
-	 * 
-	 * @param properties
-	 */
-	protected final void setProperties(
-			Collection<IWorkingToolProperty<?>> properties) {
-		this.properties.clear();
-		this.properties.addAll(properties);
-	}
-
-	/**
-	 * adds a property.
-	 * 
-	 * @param p
-	 */
-	protected final void addProperty(IWorkingToolProperty<?> p) {
-		this.properties.add(p);
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -89,18 +93,28 @@ public abstract class AWorkingTool implements IWorkingTool {
 		return Collections.unmodifiableSet(processors);
 	}
 
+	/**
+	 * is a implementation of the defined method that applies a identity
+	 * function to the pressure measured.
+	 * 
+	 * @see menya.core.model.IWorkingTool#applyPressureFunction(float)
+	 */
+	@Override
+	public float applyPressureFunction(float levelValue) {
+		return levelValue;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see menya.core.model.IWorkingTool#getProperties()
+	 * @see menya.core.model.IWorkingTool#getMaxWidth()
 	 */
 	@Override
-	public final Set<IWorkingToolProperty<?>> getProperties() {
-		return Collections.unmodifiableSet(properties);
+	public float getMaxWidth() {
+		return maxWidth;
 	}
 
-	public final boolean hasProperty(IWorkingToolProperty<?> p) {
-		return properties.contains(p);
+	protected void setMaxWidth(float width) {
+		this.maxWidth = width;
 	}
-
 }

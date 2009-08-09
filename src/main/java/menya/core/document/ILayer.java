@@ -19,8 +19,10 @@
 package menya.core.document;
 
 import java.io.IOException;
+import java.util.List;
 
 import menya.core.model.GraphicalData;
+import menya.core.model.IWorkingTool;
 
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
@@ -35,33 +37,100 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
  * @version $Revision$
  */
 public interface ILayer {
-    /**
-     * retrieves the graphical data provided by this layer.
-     * 
-     * @return A Set of graphical data.
-     */
-    Iterable<GraphicalData> getGraphicalData();
+	/**
+	 * retrieves the graphical data provided by this layer.
+	 * 
+	 * @return A Set of graphical data.
+	 */
+	Iterable<GraphicalData> getGraphicalData();
 
-    /**
-     * Simple check if this layer has changed since {@link #getGraphicalData()}
-     * was last called.
-     * <p>
-     * If getGraphicalData was never called the result is undefined.
-     * 
-     * @return false only if the data has not changed.
-     */
-    boolean hasChanged();
+	/**
+	 * Simple check if this layer has changed since {@link #getGraphicalData()}
+	 * was last called.
+	 * <p>
+	 * If getGraphicalData was never called the result is undefined.
+	 * 
+	 * @return false only if the data has not changed.
+	 */
+	boolean hasChanged();
 
-    /**
-     * Serialize this layer to the given PDF content stream.
-     * 
-     * @param contentStream
-     *            PDF Content stream.
-     * @param page
-     *            the current page this layer originate of.
-     * @throws IOException
-     *             if the layer cannot be written to the content stream.
-     */
-    void toPdf(PDPageContentStream contentStream, IPage page)
-            throws IOException;
+	/**
+	 * Serialize this layer to the given PDF content stream.
+	 * 
+	 * @param contentStream
+	 *            PDF Content stream.
+	 * @param page
+	 *            the current page this layer originate of.
+	 * @throws IOException
+	 *             if the layer cannot be written to the content stream.
+	 */
+	void toPdf(PDPageContentStream contentStream, IPage page)
+			throws IOException;
+
+	/**
+	 * retrieves all available pens for this specific layer.
+	 * <p>
+	 * <b>NOTE:</b> a layer that has no pens IS NOT EDITABLE
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public List<IWorkingTool> getAllPens();
+
+	/**
+	 * retrieves the currently active pen for this layer. If it was not changed
+	 * it is the default pen.
+	 * <p>
+	 * <b>NOTE:</b> a layer that has no pens IS NOT EDITABLE and this method
+	 * will always return null
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public IWorkingTool getActivePen();
+
+	/**
+	 * retrieves if a layers has pens and hence if it is editable.
+	 * 
+	 * @return
+	 */
+	public boolean isEditable();
+
+	/**
+	 * sets the currently active pen if the pen passed as argument is a valid
+	 * pen for this layer. Otherwise a {@link IllegalArgumentException} will be
+	 * thrown.
+	 * 
+	 * @param pen
+	 * @throws IllegalArgumentException
+	 */
+	public void setActivePen(IWorkingTool pen) throws IllegalArgumentException;
+
+	/**
+	 * retrieves the default pen for this layer. This is always the one, that
+	 * was added as first.
+	 * <p>
+	 * <b>NOTE:</b> a layer that has no pens IS NOT EDITABLE and this method
+	 * will return null
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public IWorkingTool getDefaultPen();
+
+	/**
+	 * is a utility method to add a pen, as the method {@link #getAllPens()}
+	 * returns a unmodifiable list.
+	 * 
+	 * @param pen
+	 */
+	public void addPen(IWorkingTool pen);
+
+	/**
+	 * is a utility method to remove a pen, as the method {@link #getAllPens()}
+	 * returns a unmodifiable list.
+	 * 
+	 * @param pen
+	 */
+	public void removePen(IWorkingTool pen);
 }

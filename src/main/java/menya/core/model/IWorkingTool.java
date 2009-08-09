@@ -28,17 +28,27 @@ import java.util.Set;
 public interface IWorkingTool {
 
 	/**
-	 * retrieve all properties of this working tool.
-	 * 
-	 * @return a set of properties
-	 */
-	public Set<IWorkingToolProperty<?>> getProperties();
-
-	/**
 	 * retrieves all processors of this working tool.
 	 * 
 	 * @see IProcessor
 	 * @return
 	 */
 	public Set<IProcessor> getProcessors();
+
+	/**
+	 * should implement a pressure function denoted as:
+	 * 
+	 * <pre>
+	 * f : [0..1] -&gt; [0..1]
+	 * </pre>
+	 * 
+	 * @param levelValue
+	 * @return
+	 */
+	public float applyPressureFunction(float levelValue);
+
+	/**
+	 * @return
+	 */
+	public float getMaxWidth();
 }
