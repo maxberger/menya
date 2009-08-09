@@ -15,16 +15,11 @@
  */
 package menya.core.model.tools;
 
-import java.awt.Color;
-
-import menya.core.model.properties.ColorProperty;
-import menya.core.model.properties.PropertyConstants;
-
 /**
  * @author dominik
  * 
  */
-public class Pen extends AWorkingTool {
+public class StandardPen extends AWorkingTool {
 
 	/*
 	 * (non-Javadoc)
@@ -34,10 +29,6 @@ public class Pen extends AWorkingTool {
 	@Override
 	protected void setup() {
 		// this general pen has no processors
-
-		// set property "default color"
-		addProperty(new ColorProperty(PropertyConstants.DEFAULT_COLOR,
-				Color.BLACK));
 	}
 
 }
