@@ -38,7 +38,6 @@ import jpen.PLevel.Type;
 import jpen.event.PenAdapter;
 import menya.core.document.ILayer;
 import menya.core.document.IPage;
-import menya.core.document.layers.CurveLayer;
 import menya.core.model.Curve;
 import menya.core.model.GraphicalData;
 import menya.core.model.Point;
@@ -66,8 +65,6 @@ public class SketchPane extends JComponent {
 
 	private final IPage currentPage;
 
-	private final CurveLayer activeLayer;
-
 	private Curve currentCurve;
 
 	private BufferedImage cachedImage;
@@ -80,7 +77,6 @@ public class SketchPane extends JComponent {
 	 */
 	public SketchPane(final IPage page) {
 		this.currentPage = page;
-		this.activeLayer = page.getActiveLayer();
 		// this.addMouseListener(this);
 		// this.addMouseMotionListener(this);
 
@@ -189,7 +185,10 @@ public class SketchPane extends JComponent {
 		}
 		this.currentCurve.add(p);
 		// TODO: Smooth Path
-		this.activeLayer.addCurve(this.currentCurve);
+		if (currentPage.getActiveLayer().isEditable()) {
+			currentPage.getActiveLayer().castEditableLayer().addCurve(
+					this.currentCurve);
+		}
 		this.currentCurve = null;
 		// TODO: Maybe erase path that was drawn during drag.
 		this.repaint();
@@ -206,15 +205,17 @@ public class SketchPane extends JComponent {
 			final float posy = pen.getLevelValue(Type.Y);
 			final float pressure;
 			if (PKind.Type.STYLUS.equals(pen.getKind().getType())) {
-				pressure = currentPage.getActivePen().applyPressureFunction(
-						pen.getLevelValue(Type.PRESSURE));
+				pressure = currentPage
+						.getActiveLayer()
+						.getActivePen()
+						.applyPressureFunction(pen.getLevelValue(Type.PRESSURE));
 			} else {
-				pressure = currentPage.getActivePen().applyPressureFunction(
-						SketchPane.DEFAULT_PRESSURE);
+				pressure = currentPage.getActiveLayer().getActivePen()
+						.applyPressureFunction(SketchPane.DEFAULT_PRESSURE);
 			}
 			// TODO: Improve!
 			return new Point(posx, posy, pressure
-					* currentPage.getActivePen().getMaxWidth());
+					* currentPage.getActiveLayer().getActivePen().getMaxWidth());
 		} else {
 			// XXX possible source for a nullpointerexception
 			LOGGER

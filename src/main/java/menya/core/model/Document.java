@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 import menya.core.document.IDocument;
 import menya.core.document.ILayer;
 import menya.core.document.IPage;
+import menya.core.document.layers.CurveLayer;
 import menya.core.document.layers.PDFLayer;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -156,6 +157,7 @@ public final class Document implements IDocument {
 	 */
 	private void addEmptyPage() {
 		final Page p = new Page();
+
 		if (this.pdfDocument != null) {
 			final Dimension2D pgDimension = p.getPageSize();
 			final Dimension pageDimension = new Dimension((int) pgDimension
@@ -166,6 +168,11 @@ public final class Document implements IDocument {
 					pageDimension);
 			p.addLayer(pdfLayer);
 		}
+
+		// now we add a curve layer so that we can draw on it
+		ILayer curveLayer = new CurveLayer();
+		p.addLayer(curveLayer);
+		p.setActiveLayer(curveLayer);
 		this.pages.add(p);
 	}
 
@@ -288,6 +295,8 @@ public final class Document implements IDocument {
 			int i = 0;
 			COSBase cb = privateDict.getDictionaryObject(Document
 					.getLayerName(i));
+
+			boolean gotEditableOne = false;
 			while (cb instanceof COSString) {
 				final COSString cs = (COSString) cb;
 				final byte[] buf = cs.getBytes();
@@ -295,8 +304,16 @@ public final class Document implements IDocument {
 				final ObjectInputStream ois = new ObjectInputStream(bis);
 				final ILayer layer = (ILayer) ois.readObject();
 				menyaPage.addLayer(layer);
+				if (layer.isEditable()) {
+					menyaPage.setActiveLayer(layer);
+					gotEditableOne = true;
+				}
 				i++;
 				cb = privateDict.getDictionaryObject(Document.getLayerName(i));
+			}
+
+			if (!gotEditableOne) {
+				menyaPage.addLayer(new CurveLayer());
 			}
 		} catch (final ClassNotFoundException e) {
 			throw new IOException("Failed to read embedded Menya Layer", e);

@@ -21,11 +21,11 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import menya.core.Constants;
 import menya.core.document.ILayer;
 import menya.core.document.IPage;
-import menya.core.document.layers.CurveLayer;
 
 /**
  * Default Implementation of a Document.
@@ -34,6 +34,9 @@ import menya.core.document.layers.CurveLayer;
  * @version $Revision$
  */
 public class Page implements IPage {
+
+	private static final Logger LOGGER = Logger
+			.getLogger(Page.class.toString());
 
 	/**
      * 
@@ -52,6 +55,8 @@ public class Page implements IPage {
 			(int) (Page.A4_WIDTH * Constants.CM_TO_PT),
 			(int) (Page.A4_HEIGHT * Constants.CM_TO_PT));
 
+	private ILayer activeLayer;
+
 	/**
 	 * Default Constructor.
 	 */
@@ -66,19 +71,30 @@ public class Page implements IPage {
 
 	/** {@inheritDoc} */
 	public Deque<ILayer> getLayers() {
+		// TODO alter this to use some sort of unmodifiable Deque
 		return this.layers.clone();
 	}
 
-	/** {@inheritDoc} */
-	public CurveLayer getActiveLayer() {
-		final ILayer top = this.layers.peekLast();
-		if (top instanceof CurveLayer) {
-			return (CurveLayer) top;
+	public void setActiveLayer(ILayer layer) throws IllegalArgumentException {
+		if (layers.contains(layer)) {
+			activeLayer = layer;
 		} else {
-			final CurveLayer c = new CurveLayer();
-			this.layers.add(c);
-			return c;
+			throw new IllegalArgumentException(
+					"The layer specified is not part of this document.");
 		}
+	}
+
+	/** {@inheritDoc} */
+	public ILayer getActiveLayer() {
+		if (activeLayer == null) {
+			setActiveLayer(layers.peekLast());
+		}
+		return activeLayer;
+		/*
+		 * final ILayer top = this.layers.peekLast(); if (top instanceof
+		 * CurveLayer) { return (CurveLayer) top; } else { final CurveLayer c =
+		 * new CurveLayer(); this.layers.add(c); return c; }
+		 */
 	}
 
 	/** {@inheritDoc} */
@@ -103,6 +119,7 @@ public class Page implements IPage {
 	 *            the new layer.
 	 */
 	public void addLayer(final ILayer layer) {
+		LOGGER.info("addLayer(" + layer + ")");
 		this.layers.add(layer);
 	}
 

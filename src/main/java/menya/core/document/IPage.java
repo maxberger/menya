@@ -22,7 +22,6 @@ import java.awt.geom.Dimension2D;
 import java.util.Deque;
 import java.util.List;
 
-import menya.core.document.layers.CurveLayer;
 import menya.core.model.IWorkingTool;
 
 /**
@@ -37,7 +36,7 @@ public interface IPage {
 	/**
 	 * @return the size of the page in Point.
 	 */
-	Dimension2D getPageSize();
+	public Dimension2D getPageSize();
 
 	/**
 	 * retrieves the background layer of this page. Basically would it be the
@@ -46,34 +45,73 @@ public interface IPage {
 	 * 
 	 * @return the background of this document or null if no layers are present.
 	 */
-	ILayer getBackground();
+	public ILayer getBackground();
 
 	/**
 	 * retrieves all layers of this document.
 	 * 
 	 * @return the document layers as stack
 	 */
-	Deque<ILayer> getLayers();
+	public Deque<ILayer> getLayers();
 
 	/**
-	 * Retrieves an active curve layer. This method never returns null - if no
-	 * curve layer is present, a new one must be created.
+	 * Retrieves the currently active layer. It is not guaranteed that the layer
+	 * returned by this method is actually a editable layer.
 	 * 
-	 * @return the active curve layer.
+	 * @return the active layer.
 	 */
-	CurveLayer getActiveLayer();
+	public ILayer getActiveLayer();
 
 	/**
+	 * sets the currently active layer. If the layer passed as argument is not a
+	 * valid layer for this page, a {@link IllegalArgumentException} will be
+	 * thrown.
+	 * 
+	 * @param layer
+	 * @throws IllegalArgumentException
+	 */
+	public void setActiveLayer(ILayer layer) throws IllegalArgumentException;
+
+	/**
+	 * retrieves the default pen for the currently active layer. This represents
+	 * a convenience method that is deprecated. Please note that this method may
+	 * be removed in future versions. Access the pens through the layers!
+	 * 
 	 * @return
 	 */
+	@Deprecated
 	public IWorkingTool getDefaultPen();
 
+	/**
+	 * retrieves the currently active pen for the currently active layer. This
+	 * represents a convenience method that is deprecated. Please note that this
+	 * method may be removed in future versions. Access the pens through the
+	 * layers!
+	 * 
+	 * @return
+	 */
+	@Deprecated
 	public IWorkingTool getActivePen();
 
+	/**
+	 * sets the currently active pen for the currently active layer. This
+	 * represents a convenience method that is deprecated. Please note that this
+	 * method may be removed in future versions. Access the pens through the
+	 * layers!
+	 * 
+	 * @param pen
+	 * @throws IllegalArgumentException
+	 */
+	@Deprecated
 	public void setActivePen(IWorkingTool pen) throws IllegalArgumentException;
 
 	/**
+	 * retrieves all pens of each layer on this page. This represents a
+	 * convenience method that is deprecated. Please note that this method may
+	 * be removed in future versions. Access the pens through the layers!
+	 * 
 	 * @return
 	 */
+	@Deprecated
 	public List<IWorkingTool> getAllPens();
 }
