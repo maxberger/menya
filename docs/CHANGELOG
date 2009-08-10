@@ -1,4 +1,6 @@
 Version 0.1.1
  * added working tool class structure (a general way to describe pens)
+ * moved pens into layers
+ * introduced "editable" layers
 Version 0.1.0
  * a lots of tests and sandbox coding

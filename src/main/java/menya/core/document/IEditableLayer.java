@@ -13,23 +13,24 @@
  * You should have received a copy of the GNU General Public License along with
  * Menya. If not, see <http://www.gnu.org/licenses/>.
  */
+package menya.core.document;
 
-/* $Id$ */
-
-package menya.core.document.layers;
-
-import java.io.Serializable;
-
-import menya.core.document.IEditableLayer;
+import menya.core.model.Curve;
 
 /**
- * Represents a layer with curves drawn.
+ * This interface marks editable layers and adds methods that take care of that
+ * functionality.
  * 
- * @author Max
- * @version $Revision$
+ * @author dominik
+ * 
  */
-public class CurveLayer extends AEditableLayer implements IEditableLayer,
-		Serializable {
+public interface IEditableLayer extends ILayer {
 
-	private static final long serialVersionUID = 1L;
+	/**
+	 * Adds a new curve to the layer.
+	 * 
+	 * @param curve
+	 *            the curve to add.
+	 */
+	public void addCurve(final Curve curve);
 }

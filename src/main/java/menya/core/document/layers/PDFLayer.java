@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 
 import menya.core.document.IPage;
 import menya.core.model.GraphicalData;
-import menya.core.model.tools.StandardPen;
 
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -64,9 +63,6 @@ public class PDFLayer extends ALayer {
 		this.drawer = pgdrawer;
 		this.page = pdpage;
 		this.dimension = pageDimension;
-
-		// FIXME is this correct for all pdf layers?
-		addPen(new StandardPen());
 	}
 
 	private class PDFGraphics implements GraphicalData {
@@ -79,6 +75,7 @@ public class PDFLayer extends ALayer {
 		@Override
 		public void draw(final Graphics2D g2d) {
 			try {
+				LOGGER.info("draw pdf to graphics2d");
 				PDFLayer.this.drawer.drawPage(g2d, PDFLayer.this.page,
 						PDFLayer.this.dimension);
 			} catch (final IOException io) {

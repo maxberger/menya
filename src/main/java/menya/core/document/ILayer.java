@@ -42,7 +42,7 @@ public interface ILayer {
 	 * 
 	 * @return A Set of graphical data.
 	 */
-	Iterable<GraphicalData> getGraphicalData();
+	public Iterable<GraphicalData> getGraphicalData();
 
 	/**
 	 * Simple check if this layer has changed since {@link #getGraphicalData()}
@@ -133,4 +133,15 @@ public interface ILayer {
 	 * @param pen
 	 */
 	public void removePen(IWorkingTool pen);
+
+	/**
+	 * is a method to retrieve a editable layer if the method
+	 * {@link #isEditable()} returns true. This method is quite useful as
+	 * dangerous casting is no longer needed. But be aware, if
+	 * {@link #isEditable()} does return false, this method should return null
+	 * as it is not possible to get a valid editable layer.
+	 * 
+	 * @return
+	 */
+	public IEditableLayer castEditableLayer();
 }

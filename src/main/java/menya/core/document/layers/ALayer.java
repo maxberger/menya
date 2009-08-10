@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import menya.core.document.IEditableLayer;
 import menya.core.document.ILayer;
 import menya.core.model.IWorkingTool;
 
@@ -35,6 +36,16 @@ public abstract class ALayer implements ILayer {
 
 	private List<IWorkingTool> pens = new LinkedList<IWorkingTool>();
 	private IWorkingTool activePen;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see menya.core.document.ILayer#castEditableLayer()
+	 */
+	@Override
+	public IEditableLayer castEditableLayer() {
+		return null;
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -65,7 +76,7 @@ public abstract class ALayer implements ILayer {
 	 */
 	@Override
 	public final boolean isEditable() {
-		return getAllPens().size() > 0;
+		return getAllPens().size() > 0 && castEditableLayer() != null;
 	}
 
 	/**
