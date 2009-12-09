@@ -47,7 +47,6 @@
         <module name="AvoidStarImport"/>
         <module name="AnonInnerLength"/>
         <module name="ExecutableStatementCount"/>
-        <module name="FileLength"/>
         <module name="LineLength">
             <property name="severity" value="ignore"/>
         </module>
@@ -62,7 +61,6 @@
         <module name="OperatorWrap"/>
         <module name="MethodParamPad"/>
         <module name="ParenPad"/>
-        <module name="TabCharacter"/>
         <module name="TypecastParenPad"/>
         <module name="WhitespaceAfter"/>
         <module name="WhitespaceAround">
@@ -143,11 +141,12 @@
         <module name="TodoComment">
             <property name="severity" value="ignore"/>
         </module>
-        <module name="RequiredRegexp"/>
         <module name="FinalParameters"/>
         <module name="DescendantToken"/>
         <module name="ArrayTypeStyle"/>
     </module>
+    <module name="FileLength"/>
+    <module name="FileTabCharacter"/>
     <module name="SuppressionCommentFilter"/>
     <module name="Translation"/>
     <module name="NewlineAtEndOfFile"/>
@@ -156,9 +155,8 @@
         <property name="offCommentFormat" value="GEN-BEGIN"/>
         <property name="onCommentFormat" value="GEN-END"/>
     </module>
-<!-- Checkstyle 5.0 -->
-<!--    <module name="SuppressionWithNearbyCommentFilter">
+    <module name="SuppressWithNearbyCommentFilter">
         <property name="commentFormat" value="GEN-\w+"/>
         <property name="checkFormat" value=".*"/>
-    </module> -->
+    </module>
 </module>
