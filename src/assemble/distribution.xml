@@ -22,22 +22,29 @@
       </excludes>
       <fileMode>0644</fileMode>
     </fileSet>
+    <fileSet>
+      <directory>target/nar/lib/i386-Linux-g++/jni</directory>
+      <outputDirectory>jni</outputDirectory>
+      <excludes>
+        <exclude>history.xml</exclude>
+      </excludes>
+      <fileMode>0644</fileMode>
+    </fileSet>
+    <fileSet>
+      <directory>target/nar/lib/amd64-Linux-g++/jni</directory>
+      <outputDirectory>jni</outputDirectory>
+      <excludes>
+        <exclude>history.xml</exclude>
+      </excludes>
+      <fileMode>0644</fileMode>
+    </fileSet>
+    <fileSet>
+      <directory>target/nar/lib/x86-Windows-g++/jni</directory>
+      <outputDirectory>jni</outputDirectory>
+      <excludes>
+        <exclude>history.xml</exclude>
+      </excludes>
+      <fileMode>0644</fileMode>
+    </fileSet>
   </fileSets>
-  <files>
-    <file>
-      <source>target/nar/lib/i386-Linux-g++/jni/libjpen-2.so</source>
-      <outputDirectory>jni</outputDirectory>
-      <fileMode>0644</fileMode>
-    </file>
-    <file>
-      <source>target/nar/lib/amd64-Linux-g++/jni/libjpen-2-x86_64.so</source>
-      <outputDirectory>jni</outputDirectory>
-      <fileMode>0644</fileMode>
-    </file>
-    <file>
-      <source>target/nar/lib/x86-Windows-g++/jni/jpen-2.dll</source>
-      <outputDirectory>jni</outputDirectory>
-      <fileMode>0644</fileMode>
-    </file>
-  </files>
 </assembly>
